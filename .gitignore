@@ -1,0 +1,78 @@
+# ===== Python =====
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# ===== Віртуальні середовища =====
+venv/
+.venv/
+env/
+ENV/
+
+# ===== Секрети та змінні середовища =====
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# ===== Django =====
+*.log
+local_settings.py
+db.sqlite3
+db.sqlite3-journal
+
+# Завантажені користувачами файли
+media/
+
+# Зібрана статика (collectstatic)
+staticfiles/
+static_root/
+
+# ===== Тести та покриття =====
+.pytest_cache/
+.coverage
+.coverage.*
+htmlcov/
+.tox/
+.nox/
+coverage.xml
+
+# ===== Збірка та пакування =====
+build/
+dist/
+*.egg-info/
+.eggs/
+pip-wheel-metadata/
+
+# ===== Кеші лінтерів і типізації =====
+.mypy_cache/
+.ruff_cache/
+.dmypy.json
+
+# ===== Celery =====
+celerybeat-schedule
+celerybeat.pid
+
+# ===== Docker (локальні перевизначення) =====
+docker-compose.override.yml
+
+# ===== IDE та редактори =====
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# ===== ОС =====
+.DS_Store
+Thumbs.db
+
+# ===== Frontend (якщо React лежить в одному репозиторії) =====
+node_modules/
+frontend/build/
+frontend/dist/
+npm-debug.log*
+yarn-error.log*
+/mysql_data
