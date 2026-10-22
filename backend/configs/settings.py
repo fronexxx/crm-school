@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/6.1/ref/settings/
 """
 import os
 from pathlib import Path
+from .extra_conf import *
 
 
 
@@ -38,10 +39,13 @@ INSTALLED_APPS = [
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.staticfiles',
+    'rest_framework_simplejwt',
+    'rest_framework_simplejwt.token_blacklist',
 
     # my_apps
     'core',
     'apps.user',
+    'apps.auth',
 ]
 
 MIDDLEWARE = [

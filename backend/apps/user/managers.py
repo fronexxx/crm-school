@@ -6,13 +6,16 @@ from core.constants.choices import RoleChoices
 class UserManager(BaseUserManager):
     def create_user(self, email=None, password=None, **extra_fields):
         if not email:
-            raise ValueError('Users must have an email address')
-        if not password:
-            raise ValueError('Users must have a password')
+            raise ValueError('User must have an email address')
+        # if not password:
+        #     raise ValueError('User must have a password')
 
         email = self.normalize_email(email)
         user = self.model(email=email, **extra_fields)
-        user.set_password(password)
+        if password:
+            user.set_password(password)
+        else:
+            user.set_unusable_password()
         user.save()
         return user
 
