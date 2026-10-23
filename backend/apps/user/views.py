@@ -5,10 +5,10 @@ from rest_framework.generics import CreateAPIView, ListAPIView, GenericAPIView
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 
-from apps.user.permissions import IsAdmin
+from apps.user.permissions import IsAdmin, IsManager
 from apps.user.serializer import UserSerializer, SetPasswordSerializer
 from core.constants.choices import RoleChoices
-from core.services.jwt_service import JWTService, ActivateToken
+from core.services.jwt_service import JWTService, ActivateToken, RecoveryToken
 
 UserModel = get_user_model()
 
@@ -92,6 +92,41 @@ class ManagerActivateView(GenericAPIView):
         user.is_active = True
         user.save()
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+class ManagerRecoveryTokenView(GenericAPIView):
+    permission_classes = (IsAdmin, )
+    queryset = UserModel.objects.filter(role=RoleChoices.MANAGER)
+
+    def post(self, request, *args, **kwargs):
+        user = self.get_object()
+
+        if user.is_banned:
+            raise ValidationError('The manager is banned!!!')
+        if not user.is_active:
+            raise ValidationError('The manager is not activated!!!')
+
+        recovery_token = JWTService.create_token(user, RecoveryToken)
+        return Response({'recovery_token': str(recovery_token)}, status=status.HTTP_200_OK)
+
+class ManagerRecoveryPasswordView(GenericAPIView):
+    permission_classes = (AllowAny, )
+    serializer_class = SetPasswordSerializer
+    authentication_classes = []
+
+    def post(self, request, recovery_token):
+        serializer = self.serializer_class(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        user = JWTService.verify_token(recovery_token, RecoveryToken)
+
+        if user.is_banned:
+            raise ValidationError('The manager is banned!!!')
+
+        password = serializer.validated_data['password']
+        user.set_password(password)
+        user.save()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
 
 
 

@@ -25,3 +25,4 @@ class SetPasswordSerializer(serializers.Serializer):
             raise serializers.ValidationError({'password': 'Passwords do not match'})
         validate_password(password)
         return attrs
+
