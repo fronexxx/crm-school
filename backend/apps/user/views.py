@@ -5,6 +5,7 @@ from rest_framework.generics import CreateAPIView, ListAPIView, GenericAPIView
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 
+from apps.user.pagination import ManagersPagePagination
 from apps.user.permissions import IsAdmin, IsManager
 from apps.user.serializer import UserSerializer, SetPasswordSerializer
 from core.constants.choices import RoleChoices
@@ -22,6 +23,7 @@ class ListManagersView(ListAPIView):
     queryset = UserModel.objects.all()
     serializer_class = UserSerializer
     permission_classes = (IsAdmin, )
+    pagination_class = ManagersPagePagination
 
     def get_queryset(self):
         return UserModel.objects.exclude(pk=self.request.user.id)
