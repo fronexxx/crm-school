@@ -6,7 +6,7 @@ from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 
 from apps.user.pagination import ManagersPagePagination
-from apps.user.permissions import IsAdmin, IsManager
+from apps.user.permissions import IsAdmin
 from apps.user.serializer import UserSerializer, SetPasswordSerializer
 from core.constants.choices import RoleChoices
 from core.services.jwt_service import JWTService, ActivateToken, RecoveryToken
@@ -26,15 +26,19 @@ class ListManagersView(ListAPIView):
     pagination_class = ManagersPagePagination
 
     def get_queryset(self):
-        return UserModel.objects.exclude(pk=self.request.user.id)
+        return UserModel.objects.with_total().exclude(pk=self.request.user.id)
 
 class BanManagerView(GenericAPIView):
     permission_classes = (IsAdmin, )
     def get_queryset(self):
-        return UserModel.objects.exclude(pk=self.request.user.id)
+        return UserModel.objects.with_total().exclude(pk=self.request.user.id)
 
     def patch(self, request, *args, **kwargs):
         user = self.get_object()
+
+        if not user.is_active:
+            raise ValidationError('You are unable to ban this manager because he is not activated yet!')
+
         if not user.is_banned and user.is_active:
             user.is_banned = True
             user.is_active = False
@@ -47,7 +51,7 @@ class BanManagerView(GenericAPIView):
 class UnbanManagerView(GenericAPIView):
     permission_classes = (IsAdmin, )
     def get_queryset(self):
-        return UserModel.objects.exclude(pk=self.request.user.id)
+        return UserModel.objects.with_total().exclude(pk=self.request.user.id)
 
     def patch(self, request, *args, **kwargs):
         user = self.get_object()

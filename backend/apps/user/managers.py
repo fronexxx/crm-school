@@ -1,4 +1,5 @@
 from django.contrib.auth.base_user import BaseUserManager
+from django.db.models import Count
 
 from core.constants.choices import RoleChoices
 
@@ -34,3 +35,6 @@ class UserManager(BaseUserManager):
 
         user = self.create_user(email=email, password=password, **extra_fields)
         return user
+
+    def with_total(self):
+        return self.annotate(total=Count('orders'))

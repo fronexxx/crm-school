@@ -20,10 +20,10 @@ class CommentSerializer(serializers.ModelSerializer):
         fields = ('id', 'author', 'text', 'created_at')
         read_only_fields = ('id', 'author', 'created_at',)
 
-        def get_author(self, obj):
-            if not obj.author:
-                return None
-            return f'{obj.author.firs_name} {obj.author.last_name}'
+    def get_author(self, obj):
+        if not obj.author:
+            return None
+        return f'{obj.author.first_name} {obj.author.last_name}'
 
 
 class GroupSerializer(serializers.ModelSerializer):

@@ -17,7 +17,6 @@ class UserModel(AbstractBaseUser, PermissionsMixin, BaseModel):
     is_active = models.BooleanField(default=False)
     is_staff = models.BooleanField(default=False)
     is_banned = models.BooleanField(default=False)
-    total = models.PositiveIntegerField(default=0)
     role = models.CharField(max_length=7, choices=RoleChoices, default=RoleChoices.MANAGER)
 
     USERNAME_FIELD = 'email'

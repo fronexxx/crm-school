@@ -5,10 +5,12 @@ from apps.user.models import UserModel
 
 
 class UserSerializer(serializers.ModelSerializer):
+    total = serializers.IntegerField(read_only=True)
+
     class Meta:
         model = UserModel
         fields = ('id','email', 'first_name', 'last_name', 'is_banned', 'is_active', 'last_login', 'total', 'created_at', 'updated_at')
-        read_only_fields = ('total', 'is_active', 'is_banned', 'last_login', 'created_at', 'updated_at')
+        read_only_fields = ('is_active', 'is_banned', 'last_login', 'created_at', 'updated_at')
 
     def create(self, validated_data):
         return UserModel.objects.create_user(**validated_data)

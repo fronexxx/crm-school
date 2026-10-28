@@ -35,6 +35,9 @@ class OrderModel(models.Model):
     manager = models.ForeignKey(UserModel, on_delete=models.SET_NULL, null=True, blank=True, related_name='orders')
     group = models.ForeignKey(GroupModel, on_delete=models.SET_NULL, null=True, blank=True, related_name='orders')
 
+    def __str__(self) -> str:
+        return self.name
+
 class CommentModel(models.Model):
     class Meta:
         db_table = 'comments'

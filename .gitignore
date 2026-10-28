@@ -76,3 +76,6 @@ frontend/dist/
 npm-debug.log*
 yarn-error.log*
 /mysql_data
+
+/client
+/backend/static

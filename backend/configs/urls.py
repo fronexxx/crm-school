@@ -16,9 +16,17 @@ Including another URLconf
 """
 
 from django.urls import path, include
+from drf_yasg.views import get_schema_view
+from drf_yasg import openapi
+from rest_framework.permissions import AllowAny
+
+schema_view = get_schema_view(
+    openapi.Info(title="CRM School API", default_version='v1', description="The documentation for CRM School API", contact=openapi.Contact(email="admin@gmail.com"), ),
+    public=True, permission_classes=[AllowAny])
 
 urlpatterns = [
     path('api/manager', include('apps.user.urls')),
     path('api/auth', include('apps.auth.urls')),
-    path('api/order', include('apps.orders.urls')),
+    path('api/orders', include('apps.orders.urls')),
+    path('api/doc', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
 ]
