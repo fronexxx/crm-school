@@ -51,9 +51,6 @@ pip-wheel-metadata/
 .ruff_cache/
 .dmypy.json
 
-# ===== Celery =====
-celerybeat-schedule
-celerybeat.pid
 
 # ===== Docker (локальні перевизначення) =====
 docker-compose.override.yml
@@ -70,11 +67,6 @@ docker-compose.override.yml
 Thumbs.db
 
 # ===== Frontend (якщо React лежить в одному репозиторії) =====
-node_modules/
-frontend/build/
-frontend/dist/
-npm-debug.log*
-yarn-error.log*
 /mysql_data
 
 /client
