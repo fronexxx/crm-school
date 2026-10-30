@@ -31,12 +31,13 @@ class OrderFilter(filters.FilterSet):
             'course_type',
             'status',
             'group',
+            'sum',
+            'already_paid',
             'name',
             'surname',
             'email',
             'phone',
-            'start_date',
-            'end_date',
+            'created_at'
         )
     )
 

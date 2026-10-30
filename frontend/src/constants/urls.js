@@ -3,8 +3,12 @@ const auth = '/auth';
 const orders = '/orders'
 
 const urls = {
-    login: auth,
-    orders
+    auth: {
+        login: auth,
+        refresh: `${auth}/refresh`
+    },
+    orders,
+    groups: `${orders}/groups`
 };
 
 export {
