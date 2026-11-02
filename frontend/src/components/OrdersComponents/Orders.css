@@ -88,60 +88,94 @@
     border-bottom-right-radius: 14px;
 }
 
-.orders-pagination {
+.orders-table td.orders-loading {
+    padding: 48px 0;
+    border-bottom: none;
+    border-radius: 0 0 14px 14px;
+    color: #5b6d63;
+    font-size: 15px;
+    text-align: center;
+}
+
+.orders-paginate {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
     justify-content: center;
     gap: 8px;
-    margin-top: 16px;
+    margin: 16px 0 0;
+    padding: 0;
+    list-style: none;
 }
 
-.orders-btn {
+.orders-paginate-item {
+    list-style: none;
+}
+
+.orders-paginate-link {
+    box-sizing: border-box;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 40px;
     height: 40px;
-    padding: 0 20px;
-    border: 1px solid #2f7a49;
+    padding: 0 12px;
+    border: 1px solid #cbd8d0;
     border-radius: 8px;
-    background: #2f7a49;
-    color: #ffffff;
-    font: inherit;
+    background: #ffffff;
+    color: #1f2d26;
     font-size: 15px;
     font-weight: 600;
     cursor: pointer;
-    transition: background-color 0.15s;
+    user-select: none;
+    transition: background-color 0.15s, border-color 0.15s;
 }
 
-.orders-btn:hover:not(:disabled) {
-    background: #276a3d;
+.orders-paginate-link:hover {
+    border-color: #b3c4b9;
+    background: #f1f6f3;
+}
+
+.orders-paginate-link:focus-visible {
+    outline: 3px solid rgba(47, 122, 73, 0.35);
+    outline-offset: 2px;
+}
+
+.orders-paginate-nav {
+    padding: 0 20px;
+    border-color: #2f7a49;
+    background: #2f7a49;
+    color: #ffffff;
+}
+
+.orders-paginate-nav:hover {
     border-color: #276a3d;
+    background: #276a3d;
 }
 
-.orders-btn:disabled {
+.orders-paginate-link--active,
+.orders-paginate-link--active:hover {
+    border-color: #2f7a49;
+    background: #2f7a49;
+    color: #ffffff;
+    cursor: default;
+}
+
+.orders-paginate-link--disabled,
+.orders-paginate-link--disabled:hover {
     border-color: #cbd8d0;
     background: #ffffff;
     color: #8a9a91;
     cursor: not-allowed;
 }
 
-.orders-btn--page {
-    min-width: 40px;
-    padding: 0 12px;
-    border-color: #cbd8d0;
-    background: #ffffff;
-    color: #1f2d26;
-}
-
-.orders-btn--page:hover:not(:disabled) {
-    background: #f1f6f3;
-    border-color: #b3c4b9;
-}
-
-.orders-btn--active,
-.orders-btn--active:hover:not(:disabled) {
-    border-color: #2f7a49;
-    background: #2f7a49;
-    color: #ffffff;
-    cursor: default;
+.orders-paginate-break,
+.orders-paginate-break:hover {
+    min-width: 24px;
+    padding: 0 4px;
+    border-color: transparent;
+    background: transparent;
+    color: #5b6d63;
 }
 
 .orders-error {
