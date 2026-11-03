@@ -1,12 +1,12 @@
 from django.contrib.auth import get_user_model
 from rest_framework import status
 from rest_framework.exceptions import ValidationError
-from rest_framework.generics import CreateAPIView, ListAPIView, GenericAPIView
-from rest_framework.permissions import AllowAny
+from rest_framework.generics import CreateAPIView, ListAPIView, GenericAPIView, RetrieveAPIView
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 
 from apps.user.pagination import ManagersPagePagination
-from apps.user.permissions import IsAdmin
+from apps.user.permissions import IsAdmin, IsManager
 from apps.user.serializer import UserSerializer, SetPasswordSerializer
 from core.constants.choices import RoleChoices
 from core.services.jwt_service import JWTService, ActivateToken, RecoveryToken
@@ -132,6 +132,14 @@ class ManagerRecoveryPasswordView(GenericAPIView):
         user.set_password(password)
         user.save()
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+class SelfManagerView(RetrieveAPIView):
+    permission_classes = (IsAuthenticated, )
+    serializer_class = UserSerializer
+
+    def get_object(self):
+        return self.request.user
+
 
 
 

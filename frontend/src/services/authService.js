@@ -1,6 +1,7 @@
 import {axiosInstance} from "./apiService";
 import {urls} from "../constants/urls";
 
+
 const authService = {
     login: async (user) => {
         const {data: userWithTokens} = await axiosInstance.post(urls.auth.login, user);
@@ -12,6 +13,9 @@ const authService = {
         tokens.access = access;
         tokens.refresh = refresh;
         localStorage.setItem('tokens', JSON.stringify(tokens));
+    },
+    logout: () => {
+        localStorage.removeItem('tokens');
     },
 };
 
