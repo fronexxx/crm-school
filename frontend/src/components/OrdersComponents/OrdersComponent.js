@@ -5,7 +5,6 @@ import OrderComponent from "./OrderComponent";
 import './Orders.css'
 import ReactPaginate from "react-paginate";
 import {authService} from "../../services/authService";
-import HeaderComponent from "../HeaderComponent/HeaderComponent";
 
 const OrdersComponent = () => {
     const [orders, setOrders] = useState([]);
@@ -60,13 +59,17 @@ const OrdersComponent = () => {
         void loadOrders()
     }, [searchParams])
 
-    useEffect(async () => {
-        try {
-            const value = await ordersService.getGroups();
-            setGroups(value);
-        } catch (e) {
-            setError(e.message)
-        }
+    useEffect(() => {
+        const loadGroups = async () => {
+            try {
+                const value = await ordersService.getGroups();
+                setGroups(value);
+            } catch (e) {
+                setError(e.message)
+            }
+        };
+
+        void loadGroups()
 
     }, [])
 

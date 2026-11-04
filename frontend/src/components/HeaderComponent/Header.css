@@ -1,0 +1,104 @@
+.header {
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 64px;
+    padding: 0 12px;
+    background: #ffffff;
+    border-bottom: 1px solid #cbd8d0;
+    box-shadow: 0 1px 2px rgba(31, 45, 38, 0.06),
+    0 4px 14px rgba(31, 45, 38, 0.06);
+    color: #1f2d26;
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+}
+
+.header-logo {
+    display: flex;
+    align-items: center;
+}
+
+.header-logo-text {
+    margin: 0;
+    color: #2f7a49;
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+}
+
+.header-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 15px;
+    font-weight: 600;
+}
+
+.header-btn {
+    height: 38px;
+    padding: 0 16px;
+    border-radius: 8px;
+    font: inherit;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.15s, border-color 0.15s;
+}
+
+.header-btn--primary {
+    border: 1px solid #2f7a49;
+    background: #2f7a49;
+    color: #ffffff;
+}
+
+.header-btn--primary:hover {
+    border-color: #276a3d;
+    background: #276a3d;
+}
+
+.header-btn--secondary {
+    border: 1px solid #cbd8d0;
+    background: transparent;
+    color: #5b6d63;
+}
+
+.header-btn--secondary:hover {
+    border-color: #b3c4b9;
+    background: #f1f6f3;
+    color: #1f2d26;
+}
+
+@media (min-width: 1600px) {
+    .header {
+        padding: 0 32px;
+    }
+
+    .header-btn--icon {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 38px;
+        padding: 0;
+        font-size: 18px;
+    }
+}
+
+@media (max-width: 600px) {
+    .header-actions {
+        gap: 8px;
+        font-size: 14px;
+    }
+
+    .header-btn {
+        padding: 0 12px;
+    }
+
+    .header-btn--icon {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 38px;
+        padding: 0;
+        font-size: 18px;
+    }
+}
