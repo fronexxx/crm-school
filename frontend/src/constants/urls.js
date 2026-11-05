@@ -4,6 +4,7 @@ const auth = '/auth';
 const orders = '/orders';
 const manager = '/manager';
 
+
 const urls = {
     auth: {
         login: auth,
@@ -11,6 +12,8 @@ const urls = {
     },
     orders,
     groups: `${orders}/groups`,
+    comment: (id) => `${orders}/${id}/comment`,
+
 
     managers: {
         manager,

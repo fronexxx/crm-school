@@ -37,7 +37,8 @@ class OrderFilter(filters.FilterSet):
             'surname',
             'email',
             'phone',
-            'created_at'
+            'created_at',
+            'manager',
         )
     )
 

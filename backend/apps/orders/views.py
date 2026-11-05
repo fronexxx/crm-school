@@ -13,10 +13,16 @@ from apps.user.permissions import IsAdmin, IsManager
 from core.constants.choices import StatusChoices
 
 
-class CommentCreateView(GenericAPIView):
+class CommentRetrieveCreateView(GenericAPIView):
     queryset = OrderModel.objects.all()
     serializer_class = CommentSerializer
     permission_classes = (IsAdmin | IsManager,)
+
+    def get(self, request, *args, **kwargs):
+        order = self.get_object()
+        comments = order.comments.select_related('author')
+        return Response(CommentSerializer(comments, many=True).data)
+
 
     @atomic
     def post(self, request, *args, **kwargs):
@@ -38,6 +44,7 @@ class CommentCreateView(GenericAPIView):
 
         serializer.save(order=order, author=user)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
+
 
 
 class ListGroupView(ListAPIView):

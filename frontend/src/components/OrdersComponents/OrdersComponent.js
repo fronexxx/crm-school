@@ -19,10 +19,14 @@ const OrdersComponent = () => {
     const [error, setError] = useState(null)
     const [searchParams, setSearchParams] = useSearchParams();
     const currentPage = Number(searchParams.get('page') || 1) - 1;
+    const order = searchParams.get('order');
 
-    const loadOrders = async (retry = false) => {
+    const loadOrders = async ({silent = false, retry = false} = {}) => {
         try {
-            setLoading(true);
+            if (!silent) {
+                setLoading(true);
+                setError(null)
+            }
             const value = await ordersService.getAllOrders(Object.fromEntries(searchParams));
 
             setPageInfo({
@@ -37,7 +41,7 @@ const OrdersComponent = () => {
             if (e.status === 401 && !retry) {
                 try {
                     await authService.refresh();
-                    return loadOrders(true);
+                    return loadOrders({silent, retry: true});
                 } catch (e) {
                     setError('Session expired. Please log in again.')
                 }
@@ -45,10 +49,17 @@ const OrdersComponent = () => {
                 setError(e.message)
             }
         } finally {
-            setLoading(false)
+            if (!silent) setLoading(false)
         }
     };
 
+    const sortBy = (field) => setSearchParams(prev => {
+        prev.set('order', prev.get('order') === field ? `-${field}` : field)
+        prev.set('page', '1');
+        return prev;
+    });
+
+    const mark = (field) => order === field ? '↑' : order === `-${field}` ? '↓' : '';
 
     // const goToPage = (p) => setSearchParams(prev => {
     //     prev.set('page', p);
@@ -80,6 +91,7 @@ const OrdersComponent = () => {
         setSearchParams(prev => {
             const params = new URLSearchParams(prev);
             params.set('page', page + 1);
+            params.delete('order');
             return params
         });
 
@@ -96,21 +108,21 @@ const OrdersComponent = () => {
             <table className="orders-table">
                 <thead>
                 <tr>
-                    <th>id</th>
-                    <th>name</th>
-                    <th>surname</th>
-                    <th>email</th>
-                    <th>phone</th>
-                    <th>age</th>
-                    <th>course</th>
-                    <th>course_format</th>
-                    <th>course_type</th>
-                    <th>status</th>
-                    <th>sum</th>
-                    <th>alreadyPaid</th>
-                    <th>group</th>
-                    <th>created_at</th>
-                    <th>manager</th>
+                    <th className="orders-sortable" onClick={() => sortBy('id')}>id {mark('id')}</th>
+                    <th className="orders-sortable" onClick={() => sortBy('name')}>name {mark('name')}</th>
+                    <th className="orders-sortable" onClick={() => sortBy('surname')}>surname {mark('surname')}</th>
+                    <th className="orders-sortable" onClick={() => sortBy('email')}>email {mark('email')}</th>
+                    <th className="orders-sortable" onClick={() => sortBy('phone')}>phone {mark('phone')}</th>
+                    <th className="orders-sortable" onClick={() => sortBy('age')}>age {mark('age')}</th>
+                    <th className="orders-sortable" onClick={() => sortBy('course')}>course {mark('course')}</th>
+                    <th className="orders-sortable" onClick={() => sortBy('course_format')}>course_format {mark('course_format')}</th>
+                    <th className="orders-sortable" onClick={() => sortBy('course_type')}>course_type {mark('course_type')}</th>
+                    <th className="orders-sortable" onClick={() => sortBy('status')}>status {mark('status')}</th>
+                    <th className="orders-sortable" onClick={() => sortBy('sum')}>sum {mark('sum')}</th>
+                    <th className="orders-sortable" onClick={() => sortBy('alreadyPaid')}>alreadyPaid {mark('alreadyPaid')}</th>
+                    <th className="orders-sortable" onClick={() => sortBy('group')}>group {mark('group')}</th>
+                    <th className="orders-sortable" onClick={() => sortBy('created_at')}>created_at {mark('created_at')}</th>
+                    <th className="orders-sortable" onClick={() => sortBy('manager')}>manager {mark('manager')}</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -118,7 +130,7 @@ const OrdersComponent = () => {
                     ? <tr>
                         <td className="orders-loading" colSpan={15}>Loading...</td>
                     </tr>
-                    : orders.map(order => <OrderComponent key={order.id} order={order} groups={groups}/>)}
+                    : orders.map(order => <OrderComponent key={order.id} order={order} groups={groups} onUpdated={() => loadOrders({silent: true})}/>)}
                 </tbody>
             </table>
             <div>

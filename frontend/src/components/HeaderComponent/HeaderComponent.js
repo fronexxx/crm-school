@@ -30,11 +30,12 @@ const HeaderComponent = () => {
     return (
         <div className="header">
             <div className="header-logo">
-                <p className="header-logo-text">CRM - Programming School</p>
+                <p className="header-logo-text" onClick={() => {
+                    window.location.href = '/orders';
+                }}>CRM - Programming School</p>
             </div>
             <div className="header-actions">
                 {manager?.first_name}
-                <button className="header-btn header-btn--secondary header-btn--icon" title={'logout'} onClick={handleChange}><FiLogOut/></button>
                 {isAdmin && notAdminPanel && (
                     <button className="header-btn header-btn--primary header-btn--icon" title={'Admin Panel'} onClick={() => {
                         navigate('/adminPanel')
@@ -45,6 +46,7 @@ const HeaderComponent = () => {
                         navigate('/orders');
                     }}>Back To Orders</button>
                 )}
+                <button className="header-btn header-btn--secondary header-btn--icon" title={'logout'} onClick={handleChange}><FiLogOut/></button>
             </div>
         </div>
     );
