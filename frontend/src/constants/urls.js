@@ -13,6 +13,7 @@ const urls = {
     orders,
     groups: `${orders}/groups`,
     comment: (id) => `${orders}/${id}/comment`,
+    updateOrder: (id) => `${orders}/${id}/update`,
 
 
     managers: {

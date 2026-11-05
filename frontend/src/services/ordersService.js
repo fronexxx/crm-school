@@ -18,6 +18,10 @@ const ordersService = {
         const {data} = await axiosInstance.post(urls.comment(id), comment);
         return data
     },
+    updateOrder: async (id, order_data) => {
+        const {data} = await axiosInstance.patch(urls.updateOrder(id), order_data);
+        return data
+    },
 };
 
 export {
