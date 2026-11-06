@@ -14,6 +14,7 @@ const urls = {
     groups: `${orders}/groups`,
     comment: (id) => `${orders}/${id}/comment`,
     updateOrder: (id) => `${orders}/${id}/update`,
+    orderChoices: `${orders}/choices`,
 
 
     managers: {

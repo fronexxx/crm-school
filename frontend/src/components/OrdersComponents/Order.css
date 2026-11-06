@@ -175,6 +175,38 @@
     line-height: 1.4;
 }
 
+.orders-edit-btn {
+    height: 40px;
+    margin-top: 10px;
+    padding: 0 22px;
+    border: 1px solid #2f7a49;
+    border-radius: 8px;
+    background: #ffffff;
+    color: #2f7a49;
+    font: inherit;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.15s, border-color 0.15s, color 0.15s;
+}
+
+.orders-edit-btn:hover:not(:disabled) {
+    background: #2f7a49;
+    color: #ffffff;
+}
+
+.orders-edit-btn:focus-visible {
+    outline: 3px solid rgba(47, 122, 73, 0.35);
+    outline-offset: 2px;
+}
+
+.orders-edit-btn:disabled {
+    border-color: #cbd8d0;
+    background: #f1f6f3;
+    color: #8a9a91;
+    cursor: not-allowed;
+}
+
 @media (max-width: 800px) {
     .orders-details {
         grid-template-columns: minmax(0, 1fr);

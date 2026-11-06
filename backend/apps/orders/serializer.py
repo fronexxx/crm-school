@@ -1,3 +1,5 @@
+import re
+
 from django.contrib.auth import get_user_model
 from rest_framework import serializers
 
@@ -41,10 +43,19 @@ class OrderSerializer(serializers.ModelSerializer):
                   'created_at', 'utm', 'msg')
         read_only_fields = ('id', 'created_at', 'utm', 'msg')
 
-    @staticmethod
-    def validate_phone(value: str):
+    def validate_phone(self, value: str):
+        value = value.strip()
+
         if value.startswith('0'):
             value = '+38' + value
+
+        elif value.startswith('380'):
+            value = '+' + value
+
+        if not re.fullmatch(r'\+380\d{9}', value):
+            raise serializers.ValidationError('Invalid phone number. The correct format is +380XXXXXXXXX')
+
         return value
+
 
 

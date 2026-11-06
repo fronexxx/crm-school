@@ -22,6 +22,10 @@ const ordersService = {
         const {data} = await axiosInstance.patch(urls.updateOrder(id), order_data);
         return data
     },
+    getOrderChoices: async () => {
+        const {data} = await axiosInstance.get(urls.orderChoices);
+        return data
+    },
 };
 
 export {

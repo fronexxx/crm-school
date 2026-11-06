@@ -5,6 +5,7 @@ import OrderComponent from "./OrderComponent";
 import './Orders.css'
 import ReactPaginate from "react-paginate";
 import {authService} from "../../services/authService";
+import {managerService} from "../../services/managerService";
 
 const OrdersComponent = () => {
     const [orders, setOrders] = useState([]);
@@ -20,6 +21,7 @@ const OrdersComponent = () => {
     const [searchParams, setSearchParams] = useSearchParams();
     const currentPage = Number(searchParams.get('page') || 1) - 1;
     const order = searchParams.get('order');
+    const [me, setMe] = useState(null);
 
     const loadOrders = async ({silent = false, retry = false} = {}) => {
         try {
@@ -84,6 +86,19 @@ const OrdersComponent = () => {
 
     }, [])
 
+    useEffect(() => {
+        const loadMe = async () => {
+            try {
+                const value = await managerService.getSelfManager();
+                setMe(value)
+            } catch (e) {
+                setError(e.message)
+            }
+        };
+
+        void loadMe();
+    }, []);
+
     const handlePageChange = (data) => {
         const page = data.selected;
 
@@ -130,7 +145,7 @@ const OrdersComponent = () => {
                     ? <tr>
                         <td className="orders-loading" colSpan={15}>Loading...</td>
                     </tr>
-                    : orders.map(order => <OrderComponent key={order.id} order={order} groups={groups} onUpdated={() => loadOrders({silent: true})}/>)}
+                    : orders.map(order => <OrderComponent key={order.id} order={order} currentUserId={me?.id} groups={groups} onUpdated={() => loadOrders({silent: true})}/>)}
                 </tbody>
             </table>
             <div>

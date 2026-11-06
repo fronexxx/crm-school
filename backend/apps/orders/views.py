@@ -10,7 +10,7 @@ from apps.orders.filter import OrderFilter
 from apps.orders.models import OrderModel, GroupModel
 from apps.orders.serializer import CommentSerializer, GroupSerializer, OrderSerializer
 from apps.user.permissions import IsAdmin, IsManager
-from core.constants.choices import StatusChoices
+from core.constants.choices import StatusChoices, CourseChoices, CourseFormatChoices, CourseTypeChoices
 
 
 class CommentRetrieveCreateView(GenericAPIView):
@@ -73,6 +73,19 @@ class OrderUpdateView(RetrieveUpdateAPIView):
     http_method_names = ['patch']
     permission_classes = (IsAdmin | IsManager,)
 
+    def perform_update(self, serializer):
+        order = serializer.instance
+        user = self.request.user
+
+        if order.manager_id != user.id and not order.manager_id is None:
+            raise PermissionDenied('It is not your order')
+
+        if serializer.validated_data.get('status') == StatusChoices.NEW:
+            serializer.save(manager=None)
+
+        else:
+            serializer.save()
+
 
 class OrderStatisticView(APIView):
     permission_classes = (IsAdmin,)
@@ -83,3 +96,14 @@ class OrderStatisticView(APIView):
             **{s: Count('id', filter=Q(status=s)) for s in StatusChoices.values},
         )
         return Response(stats)
+
+class OrderChoicesView(APIView):
+    permission_classes = (IsAdmin | IsManager,)
+
+    def get(self, request):
+        return Response({
+            'courses': [{'value': value, 'label': label} for value, label in CourseChoices.choices],
+            'course_formats': [{'value': value, 'label': label} for value, label in CourseFormatChoices.choices],
+            'course_types': [{'value': value, 'label': label} for value, label in CourseTypeChoices.choices],
+            'statuses': [{'value': value, 'label': label} for value, label in StatusChoices.choices]
+        })

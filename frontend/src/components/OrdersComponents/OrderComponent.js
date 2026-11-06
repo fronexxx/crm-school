@@ -1,15 +1,24 @@
 import './Order.css';
 import {useEffect, useState} from "react";
 import {ordersService} from "../../services/ordersService";
+import EditComponent from "../EditComponent/EditComponent";
 
-const OrderComponent = ({order, groups, onUpdated}) => {
+const OrderComponent = ({order, groups, onUpdated, currentUserId}) => {
     const group = groups.find(group => group.id === order.group)
     const [clicked, setClicked] = useState(false);
     const [error, setError] = useState(null);
     const [comments, setComments] = useState([]);
     const [text, setText] = useState('');
+    const [isModelOpen, setIsModalOpen] = useState(false);
+
 
     const handleOnClick = () => setClicked(prev => !prev);
+
+    const isMine =  !order.manager || order.manager?.id === currentUserId;
+
+    const openModelButton = () => {
+        setIsModalOpen(true);
+    };
 
     const handleSubmit = async (event) => {
         event.preventDefault();
@@ -25,6 +34,15 @@ const OrderComponent = ({order, groups, onUpdated}) => {
         }
     };
 
+    const handleSave = async (id, data) => {
+        await ordersService.updateOrder(id, data);
+        setIsModalOpen(false);
+        onUpdated();
+    };
+
+
+
+
     useEffect(() => {
         if (!clicked) return;
 
@@ -35,6 +53,7 @@ const OrderComponent = ({order, groups, onUpdated}) => {
             .catch(e => setError(e.message));
 
     }, [clicked, order.id])
+
 
     return (
         <>
@@ -81,10 +100,23 @@ const OrderComponent = ({order, groups, onUpdated}) => {
                                     <input className="orders-form-input" type="text" value={text} onChange={(e) => setText(e.target.value)}/>
                                     <button className="orders-form-submit" disabled={!text.trim()}>Submit</button>
                                 </form>
+                                <button
+                                    className="orders-edit-btn"
+                                    disabled={!isMine}
+                                    title={!isMine ? '' : 'Редагувати може лише менеджер, за яким закріплена заявка'}
+                                    onClick={openModelButton}
+                                >
+                                    Edit
+                                </button>
                                 {error && <div className="orders-form-error">{error}</div>}
                             </div>
                         </div>
                     </td>
+                    {isModelOpen && (
+                        <div>
+                            <EditComponent order={order} onClose={() => setIsModalOpen(false)} onSave={handleSave} groups={groups}/>
+                        </div>
+                    )}
                 </tr>
             )}
         </>
