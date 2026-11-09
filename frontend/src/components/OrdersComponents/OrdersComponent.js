@@ -55,6 +55,15 @@ const OrdersComponent = () => {
         }
     };
 
+    const loadGroups = async () => {
+        try {
+            const value = await ordersService.getGroups();
+            setGroups(value);
+        } catch (e) {
+            setError(e.message)
+        }
+    };
+
     const sortBy = (field) => setSearchParams(prev => {
         prev.set('order', prev.get('order') === field ? `-${field}` : field)
         prev.set('page', '1');
@@ -73,14 +82,7 @@ const OrdersComponent = () => {
     }, [searchParams])
 
     useEffect(() => {
-        const loadGroups = async () => {
-            try {
-                const value = await ordersService.getGroups();
-                setGroups(value);
-            } catch (e) {
-                setError(e.message)
-            }
-        };
+
 
         void loadGroups()
 
@@ -145,7 +147,8 @@ const OrdersComponent = () => {
                     ? <tr>
                         <td className="orders-loading" colSpan={15}>Loading...</td>
                     </tr>
-                    : orders.map(order => <OrderComponent key={order.id} order={order} currentUserId={me?.id} groups={groups} onUpdated={() => loadOrders({silent: true})}/>)}
+                    : orders.map(order => <OrderComponent key={order.id} order={order} currentUserId={me?.id} groups={groups} onGroupCreated={loadGroups}
+                                                          onUpdated={() => loadOrders({silent: true})}/>)}
                 </tbody>
             </table>
             <div>

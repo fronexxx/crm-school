@@ -93,6 +93,11 @@
     line-height: 1.4;
 }
 
+.edit-form > .edit-error {
+    grid-column: 1 / -1;
+    text-align: center;
+}
+
 .edit-actions {
     grid-column: 1 / -1;
     display: flex;
@@ -139,6 +144,15 @@
     background: #f1f6f3;
     color: #1f2d26;
 }
+.edit-field > .edit-btn {
+    align-self: flex-start;
+}
+
+.edit-group-actions {
+    display: flex;
+    gap: 10px;
+}
+
 
 @media (max-width: 520px) {
     .edit-modal {

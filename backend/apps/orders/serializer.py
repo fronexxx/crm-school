@@ -57,5 +57,10 @@ class OrderSerializer(serializers.ModelSerializer):
 
         return value
 
+    def validate_age(self, value: int):
+        if value < 16:
+            raise serializers.ValidationError('Age must be greater than 16 years')
+        elif value > 103:
+            raise serializers.ValidationError('Age must be less than 103 years')
 
-
+        return value

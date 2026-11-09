@@ -3,12 +3,13 @@ import {useEffect, useState} from "react";
 import {ordersService} from "../../services/ordersService";
 import {createPortal} from "react-dom";
 import './Edit.css';
+import GroupForm from "./GroupForm";
 
-const EditComponent = ({order, onClose, onSave, groups}) => {
+const EditComponent = ({order, onClose, onSave, groups, onGroupCreated}) => {
     const [choices, setChoices] = useState(null);
     const numberOrNull = (v) => v === '' ? null : Number(v);
 
-    const {handleSubmit, register, setError, formState: {errors, isSubmitting}} = useForm({
+    const {handleSubmit, register, setValue, setError, formState: {errors, isSubmitting}} = useForm({
         defaultValues: {
             name: order.name,
             surname: order.surname,
@@ -32,6 +33,7 @@ const EditComponent = ({order, onClose, onSave, groups}) => {
             setError('root', {message: e.message});
         }
     };
+
 
     useEffect(() => {
         ordersService.getOrderChoices().then(value => {
@@ -57,16 +59,10 @@ const EditComponent = ({order, onClose, onSave, groups}) => {
                 ) : (
                     <form className="edit-form" onSubmit={handleSubmit(editUpdatedData)} noValidate>
 
-                        <div className="edit-field">
-                            <label className="edit-label" htmlFor="group">Group</label>
-                            <select id="group" className="edit-control" {...register('group')}>
-                                {groups.map(group => (
-                                    <option key={group.id} value={group.id}>{group.name}</option>
-                                ))}
-                            </select>
-                        </div>
 
-                         <div className="edit-field">
+                        <GroupForm onGroupCreated={onGroupCreated} register={register} setValue={setValue} groups={groups}/>
+
+                        <div className="edit-field">
                             <label className="edit-label" htmlFor="status">Status</label>
                             <select id="status" className="edit-control" {...register('status')}>
                                 {choices?.statuses.map(status => (
@@ -106,6 +102,7 @@ const EditComponent = ({order, onClose, onSave, groups}) => {
                         <div className="edit-field">
                             <label className="edit-label" htmlFor="course">Course</label>
                             <select id="course" className="edit-control" {...register('course')}>
+                                <option value="">All Courses</option>
                                 {choices?.courses.map(course => (
                                     <option key={course.value} value={course.value}>{course.label}</option>
                                 ))}
@@ -120,6 +117,7 @@ const EditComponent = ({order, onClose, onSave, groups}) => {
                         <div className="edit-field">
                             <label className="edit-label" htmlFor="course_format">Course Format</label>
                             <select id="course_format" className="edit-control" {...register('course_format')}>
+                                <option value="">All Course Formats</option>
                                 {choices?.course_formats.map(course_format => (
                                     <option key={course_format.value} value={course_format.value}>{course_format.label}</option>
                                 ))}
@@ -128,18 +126,18 @@ const EditComponent = ({order, onClose, onSave, groups}) => {
 
                         <div className="edit-field">
                             <label className="edit-label" htmlFor="age">Age</label>
-                            <input id="age" className="edit-control" type="text" placeholder="Age" {...register('age', {setValueAs: numberOrNull})}/>
+                            <input id="age" className="edit-control" type="text" placeholder="Age" {...register('age')}/>
                         </div>
 
                         <div className="edit-field">
                             <label className="edit-label" htmlFor="course_type">Course Type</label>
                             <select id="course_type" className="edit-control" {...register('course_type')}>
+                                <option value="">All Course Types</option>
                                 {choices?.course_types.map(course_type => (
                                     <option key={course_type.value} value={course_type.value}>{course_type.label}</option>
                                 ))}
                             </select>
                         </div>
-
 
 
                         {errors.root && <p className="edit-error">{errors.root.message}</p>}

@@ -3,7 +3,7 @@ import {useEffect, useState} from "react";
 import {ordersService} from "../../services/ordersService";
 import EditComponent from "../EditComponent/EditComponent";
 
-const OrderComponent = ({order, groups, onUpdated, currentUserId}) => {
+const OrderComponent = ({order, groups, onUpdated, currentUserId, onGroupCreated}) => {
     const group = groups.find(group => group.id === order.group)
     const [clicked, setClicked] = useState(false);
     const [error, setError] = useState(null);
@@ -64,10 +64,10 @@ const OrderComponent = ({order, groups, onUpdated, currentUserId}) => {
                 <td>{order.email ?? '-'}</td>
                 <td>{order.phone ?? '-'}</td>
                 <td>{order.age ?? '-'}</td>
-                <td>{order.course ?? '-'}</td>
-                <td>{order.course_format ?? '-'}</td>
-                <td>{order.course_type ?? '-'}</td>
-                <td>{order.status}</td>
+                <td>{order.course || '-'}</td>
+                <td>{order.course_format || '-'}</td>
+                <td>{order.course_type || '-'}</td>
+                <td>{order.status ?? '-'}</td>
                 <td>{order.sum ?? '-'}</td>
                 <td>{order.already_paid ?? '-'}</td>
                 <td>{group?.name ?? '-'}</td>
@@ -114,7 +114,7 @@ const OrderComponent = ({order, groups, onUpdated, currentUserId}) => {
                     </td>
                     {isModelOpen && (
                         <div>
-                            <EditComponent order={order} onClose={() => setIsModalOpen(false)} onSave={handleSave} groups={groups}/>
+                            <EditComponent order={order} onClose={() => setIsModalOpen(false)} onSave={handleSave} groups={groups} onGroupCreated={onGroupCreated}/>
                         </div>
                     )}
                 </tr>

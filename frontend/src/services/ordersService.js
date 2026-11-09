@@ -10,6 +10,10 @@ const ordersService = {
         const {data} = await axiosInstance.get(urls.groups);
         return data
     },
+    createGroups: async (groupName) => {
+        const {data} = await axiosInstance.post(`${urls.groups}/create`, groupName);
+        return data
+    },
     getComments: async (id) => {
         const {data} = await axiosInstance.get(urls.comment(id));
         return data
@@ -18,8 +22,8 @@ const ordersService = {
         const {data} = await axiosInstance.post(urls.comment(id), comment);
         return data
     },
-    updateOrder: async (id, order_data) => {
-        const {data} = await axiosInstance.patch(urls.updateOrder(id), order_data);
+    updateOrder: async (id, orderData) => {
+        const {data} = await axiosInstance.patch(urls.updateOrder(id), orderData);
         return data
     },
     getOrderChoices: async () => {
