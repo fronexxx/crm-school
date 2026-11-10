@@ -45,4 +45,4 @@ class OrderFilter(filters.FilterSet):
     def filter_my(self, queryset, _, value):
         if value:
             return queryset.filter(manager=self.request.user)
-        return value
+        return queryset

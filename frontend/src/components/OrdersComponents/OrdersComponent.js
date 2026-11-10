@@ -6,6 +6,7 @@ import './Orders.css'
 import ReactPaginate from "react-paginate";
 import {authService} from "../../services/authService";
 import {managerService} from "../../services/managerService";
+import FilterComponent from "../FilterComponent/FilterComponent";
 
 const OrdersComponent = () => {
     const [orders, setOrders] = useState([]);
@@ -72,11 +73,6 @@ const OrdersComponent = () => {
 
     const mark = (field) => order === field ? '↑' : order === `-${field}` ? '↓' : '';
 
-    // const goToPage = (p) => setSearchParams(prev => {
-    //     prev.set('page', p);
-    //     return prev
-    // });
-
     useEffect(() => {
         void loadOrders()
     }, [searchParams])
@@ -122,6 +118,7 @@ const OrdersComponent = () => {
 
     return (
         <div className="orders-page">
+            <FilterComponent loadOrders={loadOrders} groups={groups}/>
             <table className="orders-table">
                 <thead>
                 <tr>
