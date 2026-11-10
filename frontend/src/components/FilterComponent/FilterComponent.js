@@ -38,7 +38,7 @@ const FilterComponent = ({loadOrders, groups}) => {
 
                 Object.entries(filters).forEach(([key, value]) => {
                     const valueString = String(value).trim().toLowerCase();
-                    if (valueString) {
+                    if (valueString && valueString !== 'false') {
                         params.set(key, value);
                         if (params.get('page')) {
                             params.delete('page');

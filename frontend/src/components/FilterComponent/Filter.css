@@ -13,7 +13,7 @@
 
 .orders-filters-form {
     display: grid;
-    grid-template-columns: repeat(6, minmax(0, 1fr));
+    grid-template-columns: repeat(6, minmax(0, 1fr)) max-content;
     gap: 12px;
     align-items: center;
 }
@@ -55,11 +55,12 @@
 }
 
 .orders-filter-right-group {
+    grid-column: 7;
+    grid-row: 1 / span 2;
+    align-self: center;
     display: flex;
     align-items: center;
     gap: 8px;
-    grid-column: span 1;
-    width: 100%;
 }
 
 .orders-filter-checkbox {
@@ -78,7 +79,7 @@
     cursor: pointer;
     user-select: none;
     white-space: nowrap;
-    flex: 1;
+    flex-shrink: 0;
 }
 
 .orders-filter-checkbox:hover {
@@ -154,5 +155,17 @@
     .orders-filter-select,
     .orders-filter-checkbox {
         font-size: 14px;
+    }
+}
+
+@media (max-width: 1200px) {
+    .orders-filters-form {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .orders-filter-right-group {
+        grid-column: 1 / -1;
+        grid-row: auto;
+        justify-content: flex-end;
     }
 }

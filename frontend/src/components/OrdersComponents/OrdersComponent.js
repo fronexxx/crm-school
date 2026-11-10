@@ -133,7 +133,7 @@ const OrdersComponent = () => {
                     <th className="orders-sortable" onClick={() => sortBy('course_type')}>course_type {mark('course_type')}</th>
                     <th className="orders-sortable" onClick={() => sortBy('status')}>status {mark('status')}</th>
                     <th className="orders-sortable" onClick={() => sortBy('sum')}>sum {mark('sum')}</th>
-                    <th className="orders-sortable" onClick={() => sortBy('alreadyPaid')}>alreadyPaid {mark('alreadyPaid')}</th>
+                    <th className="orders-sortable" onClick={() => sortBy('already_paid')}>alreadyPaid {mark('alreadyPaid')}</th>
                     <th className="orders-sortable" onClick={() => sortBy('group')}>group {mark('group')}</th>
                     <th className="orders-sortable" onClick={() => sortBy('created_at')}>created_at {mark('created_at')}</th>
                     <th className="orders-sortable" onClick={() => sortBy('manager')}>manager {mark('manager')}</th>
