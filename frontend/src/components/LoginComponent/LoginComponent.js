@@ -13,7 +13,7 @@ const LoginComponent = () => {
             navigate('/orders');
         } catch (e) {
             setError('root', {
-                message: e.status === 401 ? 'Невірний email або пароль' : e.message
+                message: e.message
             });
         }
     };

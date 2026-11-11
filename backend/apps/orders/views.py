@@ -33,14 +33,14 @@ class CommentRetrieveCreateView(GenericAPIView):
         serializer.is_valid(raise_exception=True)
 
         if order.manager_id is None:
-            taken = OrderModel.objects.filter(pk=order.id, manager__isnull=True).update(
-                manager=user, status=StatusChoices.IN_WORK
-            )
+            taken = OrderModel.objects.filter(pk=order.id, manager__isnull=True).update(manager=user)
 
             if not taken:
                 raise PermissionDenied('Заявку вже взяв інший менеджер')
         elif order.manager_id != user.id:
             raise PermissionDenied('Це не ваша заявка')
+
+        OrderModel.objects.filter(pk=order.id, status=StatusChoices.NEW).update(status=StatusChoices.IN_WORK)
 
         serializer.save(order=order, author=user)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
@@ -68,7 +68,7 @@ class ListOrdersView(ListAPIView):
 
 
 class OrderUpdateView(RetrieveUpdateAPIView):
-    queryset = OrderModel.objects.all()
+    queryset = OrderModel.objects.select_related('manager', 'group')
     serializer_class = OrderSerializer
     http_method_names = ['patch']
     permission_classes = (IsAdmin | IsManager,)

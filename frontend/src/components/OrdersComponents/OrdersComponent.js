@@ -1,4 +1,4 @@
-import {useSearchParams} from "react-router-dom";
+import {useNavigate, useSearchParams} from "react-router-dom";
 import {useEffect, useState} from "react";
 import {ordersService} from "../../services/ordersService";
 import OrderComponent from "./OrderComponent";
@@ -23,12 +23,16 @@ const OrdersComponent = () => {
     const currentPage = Number(searchParams.get('page') || 1) - 1;
     const order = searchParams.get('order');
     const [me, setMe] = useState(null);
+    const [openOrderId, setOpenOrderId] = useState(null);
 
-    const loadOrders = async ({silent = false, retry = false} = {}) => {
+    const toggleOrder = (id) => setOpenOrderId(prev => prev === id ? null : id);
+
+    const loadOrders = async ({silent = false} = {}) => {
         try {
             if (!silent) {
                 setLoading(true);
                 setError(null)
+                setOpenOrderId(null)
             }
             const value = await ordersService.getAllOrders(Object.fromEntries(searchParams));
 
@@ -41,18 +45,11 @@ const OrdersComponent = () => {
 
             setOrders(value.data);
         } catch (e) {
-            if (e.status === 401 && !retry) {
-                try {
-                    await authService.refresh();
-                    return loadOrders({silent, retry: true});
-                } catch (e) {
-                    setError('Session expired. Please log in again.')
-                }
-            } else {
-                setError(e.message)
-            }
+            setError(e.message);
         } finally {
-            if (!silent) setLoading(false)
+            if (!silent) {
+                setLoading(false);
+            }
         }
     };
 
@@ -104,7 +101,6 @@ const OrdersComponent = () => {
         setSearchParams(prev => {
             const params = new URLSearchParams(prev);
             params.set('page', page + 1);
-            params.delete('order');
             return params
         });
 
@@ -144,7 +140,7 @@ const OrdersComponent = () => {
                     ? <tr>
                         <td className="orders-loading" colSpan={15}>Loading...</td>
                     </tr>
-                    : orders.map(order => <OrderComponent key={order.id} order={order} currentUserId={me?.id} groups={groups} onGroupCreated={loadGroups}
+                    : orders.map(order => <OrderComponent key={order.id} order={order} currentUserId={me?.id} groups={groups} isOpen={openOrderId === order.id} onToggle={() => toggleOrder(order.id)} onGroupCreated={loadGroups}
                                                           onUpdated={() => loadOrders({silent: true})}/>)}
                 </tbody>
             </table>

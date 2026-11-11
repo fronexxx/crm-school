@@ -3,18 +3,16 @@ import {useEffect, useState} from "react";
 import {ordersService} from "../../services/ordersService";
 import EditComponent from "../EditComponent/EditComponent";
 
-const OrderComponent = ({order, groups, onUpdated, currentUserId, onGroupCreated}) => {
+const OrderComponent = ({order, groups, onUpdated, currentUserId, onGroupCreated, isOpen, onToggle}) => {
     const group = groups.find(group => group.id === order.group)
-    const [clicked, setClicked] = useState(false);
     const [error, setError] = useState(null);
     const [comments, setComments] = useState([]);
     const [text, setText] = useState('');
     const [isModelOpen, setIsModalOpen] = useState(false);
 
 
-    const handleOnClick = () => setClicked(prev => !prev);
 
-    const isMine =  !order.manager || order.manager?.id === currentUserId;
+    const isMine = !order.manager || order.manager?.id === currentUserId;
 
     const openModelButton = () => {
         setIsModalOpen(true);
@@ -41,10 +39,8 @@ const OrderComponent = ({order, groups, onUpdated, currentUserId, onGroupCreated
     };
 
 
-
-
     useEffect(() => {
-        if (!clicked) return;
+        if (!isOpen) return;
 
         ordersService.getComments(order.id)
             .then(value => {
@@ -52,12 +48,12 @@ const OrderComponent = ({order, groups, onUpdated, currentUserId, onGroupCreated
             })
             .catch(e => setError(e.message));
 
-    }, [clicked, order.id])
+    }, [isOpen, order.id])
 
 
     return (
         <>
-            <tr className={clicked ? 'orders-row orders-row--open' : 'orders-row'} onClick={handleOnClick}>
+            <tr className={isOpen ? 'orders-row orders-row--open' : 'orders-row'} onClick={onToggle}>
                 <td>{order.id}</td>
                 <td>{order.name ?? '-'}</td>
                 <td>{order.surname ?? '-'}</td>
@@ -74,7 +70,7 @@ const OrderComponent = ({order, groups, onUpdated, currentUserId, onGroupCreated
                 <td>{new Date(order.created_at).toLocaleDateString('en-US', {month: 'long', day: 'numeric', year: 'numeric'})}</td>
                 <td>{order.manager?.first_name ?? '-'}</td>
             </tr>
-            {clicked && (
+            {isOpen && (
                 <tr className="orders-details-row">
                     <td className="orders-details-cell" colSpan={15}>
                         <div className="orders-details">
@@ -83,14 +79,17 @@ const OrderComponent = ({order, groups, onUpdated, currentUserId, onGroupCreated
                                 <p className="orders-info-text">utm: {order.utm ?? '-'}</p>
                             </div>
                             <div className="orders-comments">
-                                {comments.slice(0, 3).map(comment => (
+                                {comments.map(comment => (
                                     <div className="orders-comment" key={comment.id}>
                                         <span className="orders-comment-text">{comment.text}</span>
                                         <span className="orders-comment-author">{comment.author ?? '-'}</span>
-                                        <span className="orders-comment-date">{new Date(comment.created_at).toLocaleDateString('en-US', {
-                                            month: 'long',
+                                        <span className="orders-comment-date">{new Date(comment.created_at).toLocaleString('en-US', {
+                                            month: 'short',
                                             day: 'numeric',
-                                            year: 'numeric'
+                                            year: 'numeric',
+                                            hour: '2-digit',
+                                            minute: '2-digit',
+                                            hourCycle: 'h23'
                                         })}</span>
                                     </div>
                                 ))}

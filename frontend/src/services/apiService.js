@@ -1,5 +1,5 @@
 import axios from "axios";
-import {baseUrl} from "../constants/urls";
+import {baseUrl, urls} from "../constants/urls";
 import {getErrorMessage} from "../utils/getErrorMessage";
 
 
@@ -18,11 +18,57 @@ axiosInstance.interceptors.request.use((req) => {
 
 });
 
+let refreshPromise = null
+
+const refreshTokens = () => {
+    if (!refreshPromise) {
+        const tokens = JSON.parse(localStorage.getItem('tokens'))
+
+        refreshPromise = axios
+            .post(`${baseUrl}${urls.auth.refresh}`, {refresh: tokens?.refresh})
+            .then(({data}) => {
+                localStorage.setItem('tokens', JSON.stringify({...tokens, ...data}));
+
+            })
+            .finally(() => {
+                refreshPromise = null
+            });
+    }
+    return refreshPromise;
+};
+
 axiosInstance.interceptors.response.use(
     (res) => res,
-    (error) => Promise.reject(Object.assign(new Error(getErrorMessage(error)), {
-        status: error.response?.status,
-    }))
+    async (error) => {
+        const original = error.config;
+        const isLogin = original?.url === urls.auth.login;
+
+        if (error.response?.status !== 401 || !original || original._retry || isLogin) {
+            return Promise.reject(error);
+        }
+
+        original._retry = true;
+
+        try {
+            await refreshTokens();
+            return axiosInstance(original);
+        } catch {
+            localStorage.removeItem('tokens');
+            window.location.href = '/';
+            return Promise.reject(error);
+        }
+    }
+)
+
+axiosInstance.interceptors.response.use(
+    (res) => res,
+    (error) => {
+        if (!axios.isAxiosError(error)) return Promise.reject(error);
+
+        return Promise.reject(Object.assign(new Error(getErrorMessage(error)), {
+            status: error.response?.status,
+        }));
+    }
 );
 
 export {

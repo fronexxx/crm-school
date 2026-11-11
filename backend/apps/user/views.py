@@ -26,7 +26,7 @@ class ListManagersView(ListAPIView):
     pagination_class = ManagersPagePagination
 
     def get_queryset(self):
-        return UserModel.objects.with_total().exclude(pk=self.request.user.id)
+        return UserModel.objects.with_total()
 
 class BanManagerView(GenericAPIView):
     permission_classes = (IsAdmin, )
@@ -36,8 +36,13 @@ class BanManagerView(GenericAPIView):
     def patch(self, request, *args, **kwargs):
         user = self.get_object()
 
+        if user.is_banned:
+            raise ValidationError('This manager is already banned')
+
         if not user.is_active:
             raise ValidationError('You are unable to ban this manager because he is not activated yet!')
+
+
 
         if not user.is_banned and user.is_active:
             user.is_banned = True
