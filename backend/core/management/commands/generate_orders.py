@@ -4,20 +4,22 @@ import random
 from django.utils import timezone
 from apps.orders.models import OrderModel
 from core.constants.choices import CourseChoices, CourseFormatChoices, CourseTypeChoices, StatusChoices
+from core.utils.normalize_phone import normalize_phone
 
 fake = Faker('uk_UA')
-
 
 class Command(BaseCommand):
     help = 'Generate orders'
 
     def handle(self, *args, **options):
         for i in range(500):
+            phone_number = f'0{random.choice([50, 63, 66, 67, 68, 73, 77, 93, 95, 96, 97, 98])}{random.randint(1000000, 9999999)}'
+
             OrderModel.objects.create(
                 name=fake.first_name()[:10],
                 surname=fake.last_name()[:10],
                 email=fake.unique.email(),
-                phone=f'0{random.choice([50, 63, 66, 67, 68, 73, 77, 93, 95, 96, 97, 98])}{random.randint(1000000, 9999999)}',
+                phone=normalize_phone(phone_number),
                 age=random.randint(16, 50),
                 course=random.choice(CourseChoices.values),
                 course_format=random.choice(CourseFormatChoices.values),

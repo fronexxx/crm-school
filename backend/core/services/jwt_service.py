@@ -1,5 +1,6 @@
 from django.contrib.auth import get_user_model
 from rest_framework.generics import get_object_or_404
+from rest_framework_simplejwt.exceptions import TokenError
 from rest_framework_simplejwt.tokens import Token, BlacklistMixin
 from typing import Type
 
@@ -30,12 +31,14 @@ class JWTService:
         try:
             token_res = token_class(token)
             token_res.check_blacklist()
-        except Exception:
-            raise JWTException
+        except TokenError as e:
+            raise JWTException from e
 
-        token_res.blacklist()
         user_id = token_res.payload.get('user_id')
-        return get_object_or_404(UserModel, id=user_id)
+
+        user = get_object_or_404(UserModel.objects.select_for_update(), id=user_id)
+
+        return user, token_res
 
 
 

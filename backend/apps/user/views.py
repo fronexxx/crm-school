@@ -1,12 +1,13 @@
 from django.contrib.auth import get_user_model
+from django.db.transaction import atomic
 from rest_framework import status
 from rest_framework.exceptions import ValidationError
-from rest_framework.generics import CreateAPIView, ListAPIView, GenericAPIView, RetrieveAPIView
+from rest_framework.generics import GenericAPIView, RetrieveAPIView, ListCreateAPIView
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 
 from apps.user.pagination import ManagersPagePagination
-from apps.user.permissions import IsAdmin, IsManager
+from apps.user.permissions import IsAdmin
 from apps.user.serializer import UserSerializer, SetPasswordSerializer
 from core.constants.choices import RoleChoices
 from core.services.jwt_service import JWTService, ActivateToken, RecoveryToken
@@ -14,12 +15,7 @@ from core.services.jwt_service import JWTService, ActivateToken, RecoveryToken
 UserModel = get_user_model()
 
 
-class ManagerCreateView(CreateAPIView):
-    queryset = UserModel.objects.all()
-    serializer_class = UserSerializer
-    permission_classes = (IsAdmin, )
-
-class ListManagersView(ListAPIView):
+class ListCreateManagersView(ListCreateAPIView):
     queryset = UserModel.objects.all()
     serializer_class = UserSerializer
     permission_classes = (IsAdmin, )
@@ -31,7 +27,7 @@ class ListManagersView(ListAPIView):
 class BanManagerView(GenericAPIView):
     permission_classes = (IsAdmin, )
     def get_queryset(self):
-        return UserModel.objects.with_total().exclude(pk=self.request.user.id)
+        return UserModel.objects.exclude(pk=self.request.user.id)
 
     def patch(self, request, *args, **kwargs):
         user = self.get_object()
@@ -56,7 +52,7 @@ class BanManagerView(GenericAPIView):
 class UnbanManagerView(GenericAPIView):
     permission_classes = (IsAdmin, )
     def get_queryset(self):
-        return UserModel.objects.with_total().exclude(pk=self.request.user.id)
+        return UserModel.objects.exclude(pk=self.request.user.id)
 
     def patch(self, request, *args, **kwargs):
         user = self.get_object()
@@ -87,21 +83,26 @@ class ManagerActivateView(GenericAPIView):
     permission_classes = (AllowAny, )
     authentication_classes = []
 
+    @atomic
     def post(self, request, token):
         serializer = SetPasswordSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
 
-        user = JWTService.verify_token(token, ActivateToken)
+        user, token_obj = JWTService.verify_token(token, ActivateToken)
 
-        if user.has_usable_password():
-            raise ValidationError('The manager is already activated!!!')
         if user.is_banned:
             raise ValidationError('The manager is banned!!!')
+
+        if user.is_active or user.has_usable_password():
+            raise ValidationError('The manager is already activated!!!')
+
 
         password = serializer.validated_data['password']
         user.set_password(password)
         user.is_active = True
         user.save()
+
+        token_obj.blacklist()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 class ManagerRecoveryTokenView(GenericAPIView):

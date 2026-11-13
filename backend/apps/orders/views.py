@@ -2,21 +2,20 @@ from django.db.models import Count, Q
 from django.db.transaction import atomic
 from rest_framework import status
 from rest_framework.exceptions import PermissionDenied
-from rest_framework.generics import GenericAPIView, ListAPIView, CreateAPIView, RetrieveUpdateAPIView
+from rest_framework.generics import GenericAPIView, ListAPIView, CreateAPIView, RetrieveUpdateAPIView, UpdateAPIView, ListCreateAPIView
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from apps.orders.filter import OrderFilter
 from apps.orders.models import OrderModel, GroupModel
 from apps.orders.serializer import CommentSerializer, GroupSerializer, OrderSerializer
-from apps.user.permissions import IsAdmin, IsManager
+from apps.user.permissions import IsAdmin
 from core.constants.choices import StatusChoices, CourseChoices, CourseFormatChoices, CourseTypeChoices
 
 
 class CommentRetrieveCreateView(GenericAPIView):
     queryset = OrderModel.objects.all()
     serializer_class = CommentSerializer
-    permission_classes = (IsAdmin | IsManager,)
 
     def get(self, request, *args, **kwargs):
         order = self.get_object()
@@ -47,38 +46,32 @@ class CommentRetrieveCreateView(GenericAPIView):
 
 
 
-class ListGroupView(ListAPIView):
+class ListCreateGroupView(ListCreateAPIView):
     queryset = GroupModel.objects.all()
     serializer_class = GroupSerializer
-    permission_classes = (IsAdmin | IsManager,)
     pagination_class = None
-
-
-class CreateGroupView(CreateAPIView):
-    queryset = GroupModel.objects.all()
-    serializer_class = GroupSerializer
-    permission_classes = (IsAdmin | IsManager,)
 
 
 class ListOrdersView(ListAPIView):
     queryset = OrderModel.objects.all()
     serializer_class = OrderSerializer
-    permission_classes = (IsAdmin | IsManager,)
     filterset_class = OrderFilter
 
 
-class OrderUpdateView(RetrieveUpdateAPIView):
+class OrderUpdateView(UpdateAPIView):
     queryset = OrderModel.objects.select_related('manager', 'group')
     serializer_class = OrderSerializer
-    http_method_names = ['patch']
-    permission_classes = (IsAdmin | IsManager,)
 
+
+    @atomic
     def perform_update(self, serializer):
-        order = serializer.instance
         user = self.request.user
+        order = OrderModel.objects.select_for_update().get(pk=serializer.instance.pk)
 
         if order.manager_id != user.id and not order.manager_id is None:
             raise PermissionDenied('It is not your order')
+
+        serializer.instance = order
 
         if serializer.validated_data.get('status') == StatusChoices.NEW:
             serializer.save(manager=None)
@@ -98,7 +91,6 @@ class OrderStatisticView(APIView):
         return Response(stats)
 
 class OrderChoicesView(APIView):
-    permission_classes = (IsAdmin | IsManager,)
 
     def get(self, request):
         return Response({

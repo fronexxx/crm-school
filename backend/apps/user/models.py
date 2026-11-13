@@ -11,6 +11,7 @@ class UserModel(AbstractBaseUser, PermissionsMixin, BaseModel):
         db_table = 'auth_user'
         ordering = ('-created_at',)
 
+
     email = models.EmailField(unique=True)
     first_name = models.CharField(max_length=255)
     last_name = models.CharField(max_length=255)
@@ -21,4 +22,13 @@ class UserModel(AbstractBaseUser, PermissionsMixin, BaseModel):
 
     USERNAME_FIELD = 'email'
     objects = UserManager()
+
+    @property
+    def is_admin(self):
+        return self.role == RoleChoices.ADMIN
+
+    def save(self, *args, **kwargs):
+        self.is_staff = self.is_admin
+        self.is_superuser = self.is_admin
+        super().save(*args, **kwargs)
 

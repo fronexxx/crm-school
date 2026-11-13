@@ -1,12 +1,11 @@
 from django.urls import path
 
-from apps.user.views import ManagerCreateView, ListManagersView, BanManagerView, UnbanManagerView, ActivationTokenView, ManagerActivateView, ManagerRecoveryTokenView, \
+from apps.user.views import ListCreateManagersView, BanManagerView, UnbanManagerView, ActivationTokenView, ManagerActivateView, ManagerRecoveryTokenView, \
     ManagerRecoveryPasswordView, SelfManagerView
 
 urlpatterns = [
-    path('', ListManagersView.as_view(), name='user_manager_list'),
+    path('', ListCreateManagersView.as_view(), name='user_manager_list'),
     path('/me', SelfManagerView.as_view(), name='user_manager_me'),
-    path('/create', ManagerCreateView.as_view(), name='user_manager_create'),
     path('/<int:pk>/ban', BanManagerView.as_view(), name='user_manager_ban'),
     path('/<int:pk>/unban', UnbanManagerView.as_view(), name='user_manager_unban'),
     path('/<int:pk>/activation-token', ActivationTokenView.as_view(), name='user_manager_activation_token'),

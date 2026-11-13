@@ -4,6 +4,7 @@ from django.contrib.auth import get_user_model
 from rest_framework import serializers
 
 from apps.orders.models import CommentModel, GroupModel, OrderModel
+from core.utils.normalize_phone import normalize_phone
 
 UserModel = get_user_model()
 
@@ -43,21 +44,17 @@ class OrderSerializer(serializers.ModelSerializer):
                   'created_at', 'utm', 'msg')
         read_only_fields = ('id', 'created_at', 'utm', 'msg')
 
-    def validate_phone(self, value: str):
-        value = value.strip()
 
-        if value.startswith('0'):
-            value = '+38' + value
+    def validate_phone(self, value):
+        try:
+            return normalize_phone(value)
+        except ValueError as e:
+            raise serializers.ValidationError(str(e))
 
-        elif value.startswith('380'):
-            value = '+' + value
+    def validate_age(self, value):
+        if value is None:
+            return None
 
-        if not re.fullmatch(r'\+380\d{9}', value):
-            raise serializers.ValidationError('Invalid phone number. The correct format is +380XXXXXXXXX')
-
-        return value
-
-    def validate_age(self, value: int):
         if value < 16:
             raise serializers.ValidationError('Age must be greater than 16 years')
         elif value > 103:

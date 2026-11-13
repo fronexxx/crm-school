@@ -11,7 +11,7 @@ const ordersService = {
         return data
     },
     createGroups: async (groupName) => {
-        const {data} = await axiosInstance.post(`${urls.groups}/create`, groupName);
+        const {data} = await axiosInstance.post(`${urls.groups}`, groupName);
         return data
     },
     getComments: async (id) => {

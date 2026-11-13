@@ -15,7 +15,7 @@ const EditComponent = ({order, onClose, onSave, groups, onGroupCreated}) => {
             surname: order.surname,
             email: order.email,
             phone: order.phone,
-            age: order.age,
+            age: order.age ?? '',
             course: order.course,
             course_format: order.course_format,
             course_type: order.course_type,
@@ -73,8 +73,7 @@ const EditComponent = ({order, onClose, onSave, groups, onGroupCreated}) => {
 
                         <div className="edit-field">
                             <label className="edit-label" htmlFor="name">Name</label>
-                            <input id="name" className="edit-control" type="text" placeholder="Name" {...register('name', {required: 'Enter your name'})}/>
-                            {errors.name && <p className="edit-error">{errors.name.message}</p>}
+                            <input id="name" className="edit-control" type="text" placeholder="Name" {...register('name')}/>
                         </div>
 
                         <div className="edit-field">
@@ -84,8 +83,7 @@ const EditComponent = ({order, onClose, onSave, groups, onGroupCreated}) => {
 
                         <div className="edit-field">
                             <label className="edit-label" htmlFor="surname">Surname</label>
-                            <input id="surname" className="edit-control" type="text" placeholder="Surname" {...register('surname', {required: 'Enter your surname'})}/>
-                            {errors.surname && <p className="edit-error">{errors.surname.message}</p>}
+                            <input id="surname" className="edit-control" type="text" placeholder="Surname" {...register('surname')}/>
                         </div>
 
                         <div className="edit-field">
@@ -126,7 +124,7 @@ const EditComponent = ({order, onClose, onSave, groups, onGroupCreated}) => {
 
                         <div className="edit-field">
                             <label className="edit-label" htmlFor="age">Age</label>
-                            <input id="age" className="edit-control" type="text" placeholder="Age" {...register('age')}/>
+                            <input id="age" className="edit-control" type="text" placeholder="Age" {...register('age', {setValueAs: numberOrNull})}/>
                         </div>
 
                         <div className="edit-field">

@@ -55,8 +55,8 @@ const OrderComponent = ({order, groups, onUpdated, currentUserId, onGroupCreated
         <>
             <tr className={isOpen ? 'orders-row orders-row--open' : 'orders-row'} onClick={onToggle}>
                 <td>{order.id}</td>
-                <td>{order.name ?? '-'}</td>
-                <td>{order.surname ?? '-'}</td>
+                <td>{order.name || '-'}</td>
+                <td>{order.surname || '-'}</td>
                 <td>{order.email ?? '-'}</td>
                 <td>{order.phone ?? '-'}</td>
                 <td>{order.age ?? '-'}</td>
