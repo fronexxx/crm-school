@@ -1,12 +1,11 @@
-import {useEffect, useState} from "react";
-import {managerService} from "../../services/managerService";
 import {authService} from "../../services/authService";
 import {useLocation, useNavigate} from "react-router-dom";
 import './Header.css';
 import {FiLogOut, FiSettings} from "react-icons/fi";
+import {useUser} from "../UserContext/UserProvider";
 
 const HeaderComponent = () => {
-    const [manager, setManager] = useState({});
+    const {me: manager} = useUser();
     const navigate = useNavigate();
     const location = useLocation();
 
@@ -15,15 +14,10 @@ const HeaderComponent = () => {
     const isAdminPanel = location.pathname === '/adminPanel';
     const isAdmin = manager?.role === 'admin';
 
-    useEffect(() => {
-        managerService.getSelfManager().then(value => {
-            setManager(value)
-        })
-    }, []);
 
     const handleChange = () => {
         authService.logout()
-        navigate('/', {replace: true});
+        window.location.href = '/';
     };
 
 

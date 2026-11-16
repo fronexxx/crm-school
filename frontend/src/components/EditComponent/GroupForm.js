@@ -1,11 +1,12 @@
 import {useState} from "react";
 import {ordersService} from "../../services/ordersService";
 import './Edit.css';
+import {useRequest} from "../../hooks/useRequest";
 
 const GroupForm = ({onGroupCreated, groups, register, setValue}) => {
     const [adding, setAdding] = useState(false);
     const [name, setName] = useState('');
-    const [error, setError] = useState(null);
+    const {run, setError, error} = useRequest();
 
     const onClose = () => {
         setAdding(false);
@@ -21,16 +22,15 @@ const GroupForm = ({onGroupCreated, groups, register, setValue}) => {
             return;
         }
 
-        try {
-            const group = await ordersService.createGroups({name: groupName});
-            await onGroupCreated();
-            setValue('group', group.id);
-            onClose();
-        } catch (e) {
-            setError(e.message)
-        }
+        const group = await run(() => ordersService.createGroups({name: groupName}));
 
-    }
+        if (group === undefined) return;
+
+        await onGroupCreated();
+        setValue('group', group.id);
+        onClose();
+    };
+
 
     if (adding) {
         return (

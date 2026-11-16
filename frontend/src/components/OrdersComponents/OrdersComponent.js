@@ -1,12 +1,12 @@
-import {useNavigate, useSearchParams} from "react-router-dom";
-import {useEffect, useState} from "react";
+import {useSearchParams} from "react-router-dom";
+import {useCallback, useEffect, useState} from "react";
 import {ordersService} from "../../services/ordersService";
 import OrderComponent from "./OrderComponent";
 import './Orders.css'
 import ReactPaginate from "react-paginate";
-import {authService} from "../../services/authService";
-import {managerService} from "../../services/managerService";
 import FilterComponent from "../FilterComponent/FilterComponent";
+import {useUser} from "../UserContext/UserProvider";
+import {useRequest} from "../../hooks/useRequest";
 
 const OrdersComponent = () => {
     const [orders, setOrders] = useState([]);
@@ -17,25 +17,26 @@ const OrdersComponent = () => {
         prev: false,
         next: false
     });
+    const {error, setError, run} = useRequest();
     const [loading, setLoading] = useState(false);
-    const [error, setError] = useState(null)
     const [searchParams, setSearchParams] = useSearchParams();
     const currentPage = Number(searchParams.get('page') || 1) - 1;
     const order = searchParams.get('order');
-    const [me, setMe] = useState(null);
+    const {me} = useUser();
     const [openOrderId, setOpenOrderId] = useState(null);
 
     const toggleOrder = (id) => setOpenOrderId(prev => prev === id ? null : id);
 
-    const loadOrders = async ({silent = false} = {}) => {
-        try {
-            if (!silent) {
-                setLoading(true);
-                setError(null)
-                setOpenOrderId(null)
-            }
-            const value = await ordersService.getAllOrders(Object.fromEntries(searchParams));
+    const loadOrders = useCallback(async ({silent = false} = {}) => {
 
+        if (!silent) {
+            setLoading(true);
+            setOpenOrderId(null);
+        }
+
+        const value = await run(() => ordersService.getAllOrders(Object.fromEntries(searchParams)));
+
+        if (value) {
             setPageInfo({
                 totalItems: value.total_items,
                 totalPages: value.total_pages,
@@ -44,22 +45,22 @@ const OrdersComponent = () => {
             });
 
             setOrders(value.data);
-        } catch (e) {
-            setError(e.message);
-        } finally {
-            if (!silent) {
-                setLoading(false);
-            }
+
+        } else if (!silent) {
+            setOrders([]);
         }
-    };
+
+        if (!silent) setLoading(false);
+
+
+    }, [searchParams, run]);
 
     const loadGroups = async () => {
-        try {
-            const value = await ordersService.getGroups();
-            setGroups(value);
-        } catch (e) {
-            setError(e.message)
-        }
+        const value = await run(() => ordersService.getGroups());
+
+        if (value === undefined) return;
+
+        setGroups(value);
     };
 
     const sortBy = (field) => setSearchParams(prev => {
@@ -72,7 +73,7 @@ const OrdersComponent = () => {
 
     useEffect(() => {
         void loadOrders()
-    }, [searchParams])
+    }, [loadOrders])
 
     useEffect(() => {
 
@@ -81,18 +82,6 @@ const OrdersComponent = () => {
 
     }, [])
 
-    useEffect(() => {
-        const loadMe = async () => {
-            try {
-                const value = await managerService.getSelfManager();
-                setMe(value)
-            } catch (e) {
-                setError(e.message)
-            }
-        };
-
-        void loadMe();
-    }, []);
 
     const handlePageChange = (data) => {
         const page = data.selected;
@@ -108,13 +97,10 @@ const OrdersComponent = () => {
 
     };
 
-    if (error) {
-        return <div className="orders-error">{error}</div>
-    }
 
     return (
         <div className="orders-page">
-            <FilterComponent loadOrders={loadOrders} groups={groups}/>
+            <FilterComponent groups={groups}/>
             <table className="orders-table">
                 <thead>
                 <tr>
@@ -136,11 +122,30 @@ const OrdersComponent = () => {
                 </tr>
                 </thead>
                 <tbody>
+
+                {error && (
+                    <tr className="orders-error-row">
+                        <td className="orders-error-cell" colSpan={15}>
+                            <div className="orders-error">
+                                <span className="orders-error-text">{error}</span>
+                                <div className="orders-error-actions">
+                                    <button className="orders-error-btn" type="button" onClick={() => loadOrders()}>Try again</button>
+                                    <button className="orders-error-btn orders-error-btn--secondary" type="button" onClick={() => {
+                                        window.location.href = '/orders';
+                                    }}>Reset
+                                    </button>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                )}
+
                 {loading
                     ? <tr>
                         <td className="orders-loading" colSpan={15}>Loading...</td>
                     </tr>
-                    : orders.map(order => <OrderComponent key={order.id} order={order} currentUserId={me?.id} groups={groups} isOpen={openOrderId === order.id} onToggle={() => toggleOrder(order.id)} onGroupCreated={loadGroups}
+                    : orders.map(order => <OrderComponent key={order.id} order={order} currentUserId={me?.id} groups={groups} isOpen={openOrderId === order.id}
+                                                          onToggle={() => toggleOrder(order.id)} onGroupCreated={loadGroups}
                                                           onUpdated={() => loadOrders({silent: true})}/>)}
                 </tbody>
             </table>

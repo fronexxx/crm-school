@@ -1,6 +1,8 @@
 import {axiosInstance} from "./apiService";
 import {urls} from "../constants/urls";
 
+let choicesCache = null;
+
 const ordersService = {
     getAllOrders: async (params) => {
         const {data} = await axiosInstance.get(urls.orders, {params});
@@ -26,9 +28,16 @@ const ordersService = {
         const {data} = await axiosInstance.patch(urls.updateOrder(id), orderData);
         return data
     },
-    getOrderChoices: async () => {
-        const {data} = await axiosInstance.get(urls.orderChoices);
-        return data
+    getOrderChoices: () => {
+        if (!choicesCache) {
+            choicesCache =  axiosInstance.get(urls.orderChoices)
+                .then(({data}) => data)
+                .catch(e => {
+                    choicesCache = null;
+                    throw e
+                });
+        }
+        return choicesCache;
     },
 };
 

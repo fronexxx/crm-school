@@ -2,14 +2,16 @@ import './Order.css';
 import {useEffect, useState} from "react";
 import {ordersService} from "../../services/ordersService";
 import EditComponent from "../EditComponent/EditComponent";
+import {formDate, formDateTime} from "../../utils/formDate";
+import {useRequest} from "../../hooks/useRequest";
 
 const OrderComponent = ({order, groups, onUpdated, currentUserId, onGroupCreated, isOpen, onToggle}) => {
     const group = groups.find(group => group.id === order.group)
-    const [error, setError] = useState(null);
+    const [commentsLoaded, setCommentsLoaded] = useState(false);
     const [comments, setComments] = useState([]);
     const [text, setText] = useState('');
     const [isModelOpen, setIsModalOpen] = useState(false);
-
+    const {error, run} = useRequest();
 
 
     const isMine = !order.manager || order.manager?.id === currentUserId;
@@ -21,34 +23,38 @@ const OrderComponent = ({order, groups, onUpdated, currentUserId, onGroupCreated
     const handleSubmit = async (event) => {
         event.preventDefault();
 
-        try {
-            setError(null)
-            const created = await ordersService.addComment(order.id, {text})
+        const created = await run(() => ordersService.addComment(order.id, {text}));
+
+        if (created) {
             setComments(prev => [created, ...prev]);
             setText('')
             onUpdated()
-        } catch (e) {
-            setError(e.message)
         }
     };
 
     const handleSave = async (id, data) => {
-        await ordersService.updateOrder(id, data);
+        const res = await run(() => ordersService.updateOrder(id, data));
+        if (res === undefined) return;
+
         setIsModalOpen(false);
         onUpdated();
     };
 
 
     useEffect(() => {
-        if (!isOpen) return;
+        if (!isOpen || commentsLoaded) return;
 
-        ordersService.getComments(order.id)
-            .then(value => {
-                setComments(value)
-            })
-            .catch(e => setError(e.message));
+        const loadComments = async () => {
+            const value = await run(() => ordersService.getComments(order.id));
+            if (value === undefined) return;
 
-    }, [isOpen, order.id])
+            setComments(value);
+            setCommentsLoaded(true);
+        };
+
+        void loadComments()
+
+    }, [isOpen, commentsLoaded, order.id, run]);
 
 
     return (
@@ -67,7 +73,7 @@ const OrderComponent = ({order, groups, onUpdated, currentUserId, onGroupCreated
                 <td>{order.sum ?? '-'}</td>
                 <td>{order.already_paid ?? '-'}</td>
                 <td>{group?.name ?? '-'}</td>
-                <td>{new Date(order.created_at).toLocaleDateString('en-US', {month: 'long', day: 'numeric', year: 'numeric'})}</td>
+                <td>{formDate(order.created_at)}</td>
                 <td>{order.manager?.first_name ?? '-'}</td>
             </tr>
             {isOpen && (
@@ -83,14 +89,7 @@ const OrderComponent = ({order, groups, onUpdated, currentUserId, onGroupCreated
                                     <div className="orders-comment" key={comment.id}>
                                         <span className="orders-comment-text">{comment.text}</span>
                                         <span className="orders-comment-author">{comment.author ?? '-'}</span>
-                                        <span className="orders-comment-date">{new Date(comment.created_at).toLocaleString('en-US', {
-                                            month: 'short',
-                                            day: 'numeric',
-                                            year: 'numeric',
-                                            hour: '2-digit',
-                                            minute: '2-digit',
-                                            hourCycle: 'h23'
-                                        })}</span>
+                                        <span className="orders-comment-date">{formDateTime(comment.created_at)}</span>
                                     </div>
                                 ))}
                             </div>

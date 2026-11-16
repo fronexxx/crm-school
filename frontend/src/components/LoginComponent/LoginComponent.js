@@ -1,16 +1,14 @@
 import {useForm} from "react-hook-form";
 import {authService} from "../../services/authService";
-import {useNavigate} from "react-router-dom";
 import './LoginCard.css';
 
 const LoginComponent = () => {
     const {handleSubmit, register, setError, reset, formState: {errors, isSubmitting}} = useForm();
-    const navigate = useNavigate();
 
     const onSubmit = async (user) => {
         try {
             await authService.login(user);
-            navigate('/orders');
+            window.location.href = '/orders';
         } catch (e) {
             setError('root', {
                 message: e.message

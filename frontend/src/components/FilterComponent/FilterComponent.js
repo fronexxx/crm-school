@@ -5,7 +5,7 @@ import {ordersService} from "../../services/ordersService";
 import './Filter.css';
 import {FiFile, FiRefreshCcw} from "react-icons/fi";
 
-const FilterComponent = ({loadOrders, groups}) => {
+const FilterComponent = ({groups}) => {
     const [searchParams, setSearchParams] = useSearchParams();
     const [choices, setChoices] = useState(null);
 
@@ -58,10 +58,6 @@ const FilterComponent = ({loadOrders, groups}) => {
             setChoices(value)
         });
     }, []);
-
-    useEffect(() => {
-        loadOrders();
-    }, [searchParams])
 
     return (
         <div className="orders-filters">
