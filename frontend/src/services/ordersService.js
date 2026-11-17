@@ -4,8 +4,8 @@ import {urls} from "../constants/urls";
 let choicesCache = null;
 
 const ordersService = {
-    getAllOrders: async (params) => {
-        const {data} = await axiosInstance.get(urls.orders, {params});
+    getAllOrders: async (params, signal) => {
+        const {data} = await axiosInstance.get(urls.orders, {params, signal});
         return data
     },
     getGroups: async () => {
@@ -38,6 +38,10 @@ const ordersService = {
                 });
         }
         return choicesCache;
+    },
+    exportExcel: async (params) => {
+        const {data} = await axiosInstance.get(urls.excel, {params, responseType: 'blob'});
+        return data
     },
 };
 

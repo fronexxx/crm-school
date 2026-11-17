@@ -27,7 +27,12 @@ const EditComponent = ({order, onClose, onSave, groups, onGroupCreated}) => {
     });
 
     const editUpdatedData = async (data) => {
-        await onSave(order.id, data);
+        try {
+            await onSave(order.id, data);
+        }catch (e) {
+            setError('root', {message: e.message})
+
+        }
     };
 
 

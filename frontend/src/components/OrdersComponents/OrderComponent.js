@@ -33,9 +33,7 @@ const OrderComponent = ({order, groups, onUpdated, currentUserId, onGroupCreated
     };
 
     const handleSave = async (id, data) => {
-        const res = await run(() => ordersService.updateOrder(id, data));
-        if (res === undefined) return;
-
+        await ordersService.updateOrder(id, data);
         setIsModalOpen(false);
         onUpdated();
     };
@@ -101,7 +99,6 @@ const OrderComponent = ({order, groups, onUpdated, currentUserId, onGroupCreated
                                 <button
                                     className="orders-edit-btn"
                                     disabled={!isMine}
-                                    title={!isMine ? '' : 'Редагувати може лише менеджер, за яким закріплена заявка'}
                                     onClick={openModelButton}
                                 >
                                     Edit
@@ -111,9 +108,7 @@ const OrderComponent = ({order, groups, onUpdated, currentUserId, onGroupCreated
                         </div>
                     </td>
                     {isModelOpen && (
-                        <div>
                             <EditComponent order={order} onClose={() => setIsModalOpen(false)} onSave={handleSave} groups={groups} onGroupCreated={onGroupCreated}/>
-                        </div>
                     )}
                 </tr>
             )}

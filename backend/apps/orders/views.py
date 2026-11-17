@@ -2,15 +2,24 @@ from django.db.models import Count, Q
 from django.db.transaction import atomic
 from rest_framework import status
 from rest_framework.exceptions import PermissionDenied
-from rest_framework.generics import GenericAPIView, ListAPIView, CreateAPIView, RetrieveUpdateAPIView, UpdateAPIView, ListCreateAPIView
+from rest_framework.generics import GenericAPIView, ListAPIView, UpdateAPIView, ListCreateAPIView
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from django.http import HttpResponse
+from django.utils import timezone
+from io import BytesIO
+from openpyxl import Workbook
+from openpyxl.styles import Font
+from openpyxl.utils import get_column_letter
 
 from apps.orders.filter import OrderFilter
 from apps.orders.models import OrderModel, GroupModel
 from apps.orders.serializer import CommentSerializer, GroupSerializer, OrderSerializer
 from apps.user.permissions import IsAdmin
 from core.constants.choices import StatusChoices, CourseChoices, CourseFormatChoices, CourseTypeChoices
+
+HEADERS = ['id', 'name', 'surname', 'email', 'phone', 'age', 'course', 'course_format',
+           'course_type', 'status', 'sum', 'alreadyPaid', 'group', 'created_at', 'manager']
 
 
 class CommentRetrieveCreateView(GenericAPIView):
@@ -56,6 +65,52 @@ class ListOrdersView(ListAPIView):
     queryset = OrderModel.objects.all()
     serializer_class = OrderSerializer
     filterset_class = OrderFilter
+
+class OrderExcelView(ListOrdersView):
+    pagination_class = None
+
+    def list(self, request, *args, **kwargs):
+        orders = self.filter_queryset(self.get_queryset())
+
+        wb = Workbook()
+        ws = wb.active
+        ws.title = 'Orders'
+        ws.append(HEADERS)
+
+        for cell in ws[1]:
+            cell.font = Font(bold=True)
+
+        for order in orders:
+            ws.append([
+                order.id,
+                order.name,
+                order.surname,
+                order.email,
+                order.phone,
+                order.age,
+                order.course,
+                order.course_format,
+                order.course_type,
+                order.status,
+                order.sum,
+                order.already_paid,
+                order.group.name if order.group else None,
+                timezone.localtime(order.created_at).replace(tzinfo=None),
+                f'{order.manager.first_name}' if order.manager else None,
+            ])
+
+        for index in range(1, len(HEADERS) + 1):
+            ws.column_dimensions[get_column_letter(index)].width = 18
+
+        buffer = BytesIO()
+        wb.save(buffer)
+
+        response = HttpResponse(
+            buffer.getvalue(),
+            content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        )
+        response['Content-Disposition'] = 'attachment; filename="orders.xlsx"'
+        return response
 
 
 class OrderUpdateView(UpdateAPIView):

@@ -142,6 +142,22 @@
     background: #f1f6f3;
 }
 
+.orders-filter-button:disabled {
+    opacity: 0.6;
+    cursor: wait;
+}
+
+.orders-filter-error {
+    margin: 12px 0 0;
+    padding: 10px 12px;
+    border: 1px solid #f1b5b0;
+    border-left: 4px solid #b42318;
+    border-radius: 8px;
+    background: #fdeeed;
+    color: #8a1c13;
+    font-size: 13px;
+}
+
 @media (min-width: 1600px) {
     .orders-filters {
         padding: 22px;

@@ -4,10 +4,22 @@ import {useEffect, useState} from "react";
 import {ordersService} from "../../services/ordersService";
 import './Filter.css';
 import {FiFile, FiRefreshCcw} from "react-icons/fi";
+import {useRequest} from "../../hooks/useRequest";
+import {downloadFile} from "../../utils/downloadFile";
 
 const FilterComponent = ({groups}) => {
     const [searchParams, setSearchParams] = useSearchParams();
     const [choices, setChoices] = useState(null);
+    const [exporting, setExporting] = useState(false);
+    const {error, run} = useRequest();
+
+    const handleExport = async () => {
+        setExporting(true);
+        const blob = await run(() => ordersService.exportExcel(Object.fromEntries(searchParams)));
+        setExporting(false);
+
+        if (blob) downloadFile(blob, 'orders.xlsx');
+    };
 
     const {register, control, reset} = useForm({
         defaultValues: {
@@ -138,12 +150,13 @@ const FilterComponent = ({groups}) => {
                             <FiRefreshCcw/>
                         </button>
 
-                        <button className="orders-filter-button" type="button" title="Convert to excel">
+                        <button className="orders-filter-button" type="button" title="Convert to excel" disabled={exporting} onClick={handleExport}>
                             <FiFile/>
                         </button>
                     </div>
                 </div>
             </form>
+            {error && <p className="orders-filter-error">{error}</p>}
         </div>
     );
 };

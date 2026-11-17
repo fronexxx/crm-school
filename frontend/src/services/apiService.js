@@ -63,6 +63,7 @@ axiosInstance.interceptors.response.use(
 axiosInstance.interceptors.response.use(
     (res) => res,
     (error) => {
+        if (axios.isCancel(error)) return Promise.reject(error);
         if (!axios.isAxiosError(error)) return Promise.reject(error);
 
         return Promise.reject(Object.assign(new Error(getErrorMessage(error)), {

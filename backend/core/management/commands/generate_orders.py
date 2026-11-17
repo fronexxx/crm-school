@@ -9,8 +9,6 @@ from core.utils.normalize_phone import normalize_phone
 fake = Faker('uk_UA')
 
 class Command(BaseCommand):
-    help = 'Generate orders'
-
     def handle(self, *args, **options):
         for i in range(500):
             phone_number = f'0{random.choice([50, 63, 66, 67, 68, 73, 77, 93, 95, 96, 97, 98])}{random.randint(1000000, 9999999)}'

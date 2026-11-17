@@ -1,5 +1,5 @@
 import {useSearchParams} from "react-router-dom";
-import {useCallback, useEffect, useState} from "react";
+import {useCallback, useEffect, useRef, useState} from "react";
 import {ordersService} from "../../services/ordersService";
 import OrderComponent from "./OrderComponent";
 import './Orders.css'
@@ -17,7 +17,7 @@ const OrdersComponent = () => {
         prev: false,
         next: false
     });
-    const {error, setError, run} = useRequest();
+    const {error, run} = useRequest();
     const [loading, setLoading] = useState(false);
     const [searchParams, setSearchParams] = useSearchParams();
     const currentPage = Number(searchParams.get('page') || 1) - 1;
@@ -27,14 +27,21 @@ const OrdersComponent = () => {
 
     const toggleOrder = (id) => setOpenOrderId(prev => prev === id ? null : id);
 
+    const controllerRef = useRef(null);
+
     const loadOrders = useCallback(async ({silent = false} = {}) => {
+        controllerRef.current?.abort();
+        const controller = new AbortController();
+        controllerRef.current = controller;
 
         if (!silent) {
             setLoading(true);
             setOpenOrderId(null);
         }
 
-        const value = await run(() => ordersService.getAllOrders(Object.fromEntries(searchParams)));
+        const value = await run(() => ordersService.getAllOrders(Object.fromEntries(searchParams), controller.signal));
+
+        if (controller.signal.aborted) return;
 
         if (value) {
             setPageInfo({
@@ -50,7 +57,7 @@ const OrdersComponent = () => {
             setOrders([]);
         }
 
-        if (!silent) setLoading(false);
+        setLoading(false);
 
 
     }, [searchParams, run]);
@@ -72,14 +79,12 @@ const OrdersComponent = () => {
     const mark = (field) => order === field ? '↑' : order === `-${field}` ? '↓' : '';
 
     useEffect(() => {
-        void loadOrders()
+        void loadOrders();
+        return () => controllerRef.current?.abort();
     }, [loadOrders])
 
     useEffect(() => {
-
-
         void loadGroups()
-
     }, [])
 
 
