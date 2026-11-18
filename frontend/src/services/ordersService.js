@@ -30,7 +30,7 @@ const ordersService = {
     },
     getOrderChoices: () => {
         if (!choicesCache) {
-            choicesCache =  axiosInstance.get(urls.orderChoices)
+            choicesCache = axiosInstance.get(urls.orderChoices)
                 .then(({data}) => data)
                 .catch(e => {
                     choicesCache = null;

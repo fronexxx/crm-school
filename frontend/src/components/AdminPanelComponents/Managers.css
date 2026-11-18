@@ -1,0 +1,180 @@
+.managers-page {
+    box-sizing: border-box;
+    min-height: calc(100vh - 64px);
+    padding: 28px 16px 40px;
+    background: #e3ece6;
+    color: #1f2d26;
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+}
+
+.managers-content {
+    max-width: 1100px;
+    margin: 0 auto;
+}
+
+.managers-stats {
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.managers-stats-title {
+    margin: 0 0 12px;
+    font-size: 20px;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+}
+
+.managers-stats-list {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px;
+}
+
+.managers-stat {
+    padding: 6px 14px;
+    background: #ffffff;
+    border: 1px solid #cbd8d0;
+    border-radius: 999px;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.managers-stat:first-child {
+    background: #2f7a49;
+    border-color: #2f7a49;
+    color: #ffffff;
+}
+
+.managers-toolbar {
+    margin-bottom: 16px;
+}
+
+.managers-create {
+    height: 40px;
+    padding: 0 26px;
+    border: 1px solid #2f7a49;
+    border-radius: 8px;
+    background: #2f7a49;
+    color: #ffffff;
+    font: inherit;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.15s, border-color 0.15s;
+}
+
+.managers-create:hover {
+    border-color: #276a3d;
+    background: #276a3d;
+}
+
+.managers-error {
+    margin-bottom: 14px;
+    background: #fdeeed;
+    border: 1px solid #f1b5b0;
+    border-left: 4px solid #b42318;
+    border-radius: 10px;
+    color: #8a1c13;
+}
+
+.managers-error-body {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 12px 16px;
+    font-size: 14px;
+    line-height: 1.4;
+}
+
+.managers-error-text {
+    flex: 1 1 240px;
+    font-weight: 600;
+}
+
+.managers-error-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.managers-error-btn {
+    height: 34px;
+    padding: 0 16px;
+    border: 1px solid #b42318;
+    border-radius: 8px;
+    background: #b42318;
+    color: #ffffff;
+    font: inherit;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.15s, border-color 0.15s;
+}
+
+.managers-error-btn:hover {
+    border-color: #8a1c13;
+    background: #8a1c13;
+}
+
+.managers-error-btn--secondary {
+    border-color: #f1b5b0;
+    background: transparent;
+    color: #8a1c13;
+}
+
+.managers-error-btn--secondary:hover {
+    border-color: #b42318;
+    background: #fbdad7;
+    color: #8a1c13;
+}
+
+.managers-list {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.managers-loading {
+    padding: 48px 0;
+    background: #ffffff;
+    border: 1px solid #cbd8d0;
+    border-radius: 14px;
+    color: #5b6d63;
+    font-size: 15px;
+    text-align: center;
+}
+
+.managers-pagination {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.managers-btn {
+    height: 40px;
+    padding: 0 24px;
+    border: 1px solid #2f7a49;
+    border-radius: 8px;
+    background: #2f7a49;
+    color: #ffffff;
+    font: inherit;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.15s, border-color 0.15s;
+}
+
+.managers-btn:hover:not(:disabled) {
+    border-color: #276a3d;
+    background: #276a3d;
+}
+
+.managers-btn:disabled {
+    border-color: #cbd8d0;
+    background: #ffffff;
+    color: #8a9a91;
+    cursor: not-allowed;
+}

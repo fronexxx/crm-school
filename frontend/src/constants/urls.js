@@ -20,7 +20,8 @@ const urls = {
 
     managers: {
         manager,
-        selfManager: `${manager}/me`
+        selfManager: `${manager}/me`,
+        statistic: `${orders}/statistic`,
     }
 };
 
