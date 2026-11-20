@@ -1,11 +1,42 @@
 from django.contrib.auth.password_validation import validate_password
 from rest_framework import serializers
+from rest_framework.validators import UniqueValidator
 
 from apps.user.models import UserModel
 
 
 class UserSerializer(serializers.ModelSerializer):
     total = serializers.IntegerField(read_only=True)
+    email = serializers.EmailField(
+        error_messages={
+            'required': 'Email is required.',
+            'blank': 'Email is required.',
+            'null': 'Email is required.',
+            'invalid': 'Enter a valid email.',
+        },
+        validators=[UniqueValidator(
+            queryset=UserModel.objects.all(),
+            message='A manager with that email already exists.',
+        )]
+    )
+
+    first_name = serializers.CharField(
+        error_messages={
+            'required': 'Name is required.',
+            'blank': 'Name is required.',
+            'null': 'Name is required.',
+
+        }
+    )
+
+    last_name = serializers.CharField(
+        error_messages={
+            'required': 'Surname is required.',
+            'blank': 'Surname is required.',
+            'null': 'Surname is required.',
+
+        }
+    )
 
     class Meta:
         model = UserModel

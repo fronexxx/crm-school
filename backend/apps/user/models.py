@@ -9,7 +9,7 @@ from core.models import BaseModel
 class UserModel(AbstractBaseUser, PermissionsMixin, BaseModel):
     class Meta:
         db_table = 'auth_user'
-        ordering = ('-created_at',)
+        ordering = ('-id',)
 
 
     email = models.EmailField(unique=True)

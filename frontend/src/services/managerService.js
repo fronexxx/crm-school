@@ -14,6 +14,10 @@ const managerService = {
         const {data} = await axiosInstance.get(urls.managers.statistic);
         return data
     },
+    createManager: async (manager) => {
+        const {data} = await axiosInstance.post(urls.managers.manager, manager);
+        return data
+    },
 };
 
 export {

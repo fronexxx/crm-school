@@ -2,6 +2,8 @@ import {formDate} from "../../utils/formDate";
 import './Manager.css';
 
 const ManagerComponent = ({manager}) => {
+    const isActivated = manager.is_active;
+
     return (
         <div className="manager-card">
             <div className="manager-info">
@@ -24,7 +26,7 @@ const ManagerComponent = ({manager}) => {
                 <span className="manager-total-value">{manager.total}</span>
             </div>
             <div className="manager-actions">
-                <button className="manager-btn manager-btn--activate">ACTIVATE</button>
+                {isActivated ? <button className="manager-btn manager-btn--activate">RECOVERY PASSWORD</button> : <button className="manager-btn manager-btn--activate">ACTIVATE</button>}
                 <button className="manager-btn manager-btn--ban">BAN</button>
                 <button className="manager-btn manager-btn--unban">UNBAN</button>
             </div>

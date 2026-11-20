@@ -22,7 +22,8 @@ class ListCreateManagersView(ListCreateAPIView):
     pagination_class = ManagersPagePagination
 
     def get_queryset(self):
-        return UserModel.objects.with_total()
+        return UserModel.objects.with_total().order_by('-created_at')
+
 
 class BanManagerView(GenericAPIView):
     permission_classes = (IsAdmin, )

@@ -1,13 +1,15 @@
-import {useEffect, useState} from "react";
+import {useCallback, useEffect, useState} from "react";
 import {useRequest} from "../../hooks/useRequest";
 import {managerService} from "../../services/managerService";
 import ManagerComponent from "./ManagerComponent";
 import './Managers.css';
+import CreateManagerComponent from "./CreateManagerComponent";
 
 const ManagersComponent = () => {
     const [managers, setManagers] = useState([]);
     const [page, setPage] = useState(1);
     const [loading, setLoading] = useState(false);
+    const [isModalOpen, setIsModalOpen] = useState(false);
     const [stat, setStat] = useState({});
     const [pageInfo, setPageInfo] = useState({
         prev: false,
@@ -15,7 +17,11 @@ const ManagersComponent = () => {
     });
     const {run, error} = useRequest();
 
-    const loadManagers = async () => {
+    const openModalButton = () => {
+        setIsModalOpen(true);
+    };
+
+    const loadManagers = useCallback(async () => {
         setLoading(true);
 
         const value = await run(() => managerService.getAllManagers(page));
@@ -31,11 +37,17 @@ const ManagersComponent = () => {
         }
 
         setLoading(false);
+    }, [page, run])
+
+    const handleSave = async (data) => {
+        await managerService.createManager(data);
+        setIsModalOpen(false);
+        void loadManagers()
     };
 
     useEffect(() => {
         void loadManagers()
-    }, [page, run]);
+    }, [loadManagers]);
 
 
     useEffect(() => {
@@ -54,6 +66,7 @@ const ManagersComponent = () => {
 
     const changePage = (p) => {
         setPage(p);
+        window.scroll({top: 0, behavior: 'smooth'});
     };
 
     return (
@@ -72,7 +85,7 @@ const ManagersComponent = () => {
                 </div>
 
                 <div className="managers-toolbar">
-                    <button className="managers-create" type="button">Create</button>
+                    <button className="managers-create" type="button" onClick={openModalButton}>Create</button>
                 </div>
 
                 {error && (
@@ -107,6 +120,9 @@ const ManagersComponent = () => {
                     </button>
                 </div>
             </div>
+            {isModalOpen && (
+                <CreateManagerComponent onSave={handleSave} onCancel={() => setIsModalOpen(false)}/>
+            )}
         </div>
     );
 };
