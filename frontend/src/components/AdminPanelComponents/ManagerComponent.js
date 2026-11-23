@@ -1,8 +1,43 @@
 import {formDate} from "../../utils/formDate";
 import './Manager.css';
+import {managerService} from "../../services/managerService";
+import {useRequest} from "../../hooks/useRequest";
+import {useState} from "react";
 
-const ManagerComponent = ({manager}) => {
-    const isActivated = manager.is_active;
+const ManagerComponent = ({manager, onUpdated}) => {
+    const {run, error, setError} = useRequest();
+    const [activationLink, setActivationLink] = useState(null);
+    const [copied, setCopied] = useState(false);
+
+    const handleOnActivate = async (id) => {
+        const value = await run(() => managerService.createActivationToken(id));
+        if (value) {
+            setActivationLink(`${window.location.origin}/activate/${value.token}`);
+            setTimeout(() => setActivationLink(null), 20000);
+        }
+
+    };
+
+    const handleCopy = async () => {
+        try {
+            await navigator.clipboard.writeText(String(activationLink));
+            setCopied(true);
+            setTimeout(() => setCopied(false), 2000);
+            setTimeout(() => setActivationLink(null), 10000);
+        } catch {
+            setError('Could not copy the link');
+        }
+    };
+
+    const handleOnBan = async (id) => {
+        await run(() => managerService.banManager(id));
+        onUpdated();
+    };
+
+    const handleOnUnBan = async (id) => {
+        await run(() => managerService.unbanManager(id));
+        onUpdated();
+    };
 
     return (
         <div className="manager-card">
@@ -26,10 +61,20 @@ const ManagerComponent = ({manager}) => {
                 <span className="manager-total-value">{manager.total}</span>
             </div>
             <div className="manager-actions">
-                {isActivated ? <button className="manager-btn manager-btn--activate">RECOVERY PASSWORD</button> : <button className="manager-btn manager-btn--activate">ACTIVATE</button>}
-                <button className="manager-btn manager-btn--ban">BAN</button>
-                <button className="manager-btn manager-btn--unban">UNBAN</button>
+                {manager.is_active
+                    ? <button className="manager-btn manager-btn--activate" type="button">RECOVERY PASSWORD</button>
+                    : activationLink
+                        ? <button className="manager-btn manager-btn--activate" type="button" onClick={handleCopy}>
+                            {copied ? 'COPIED' : 'COPY TO CLIPBOARD'}
+                        </button>
+                        : <button className="manager-btn manager-btn--activate" type="button" onClick={() => handleOnActivate(manager.id)}>
+                            ACTIVATE
+                        </button>
+                }
+                <button className="manager-btn manager-btn--ban" type="button" onClick={() => handleOnBan(manager.id)}>BAN</button>
+                <button className="manager-btn manager-btn--unban" type="button" onClick={() => handleOnUnBan(manager.id)}>UNBAN</button>
             </div>
+            {error && <p className="manager-error">{error}</p>}
         </div>
     );
 };

@@ -147,6 +147,19 @@
     cursor: not-allowed;
 }
 
+.manager-error {
+    grid-column: 1 / -1;
+    margin: 0;
+    padding: 10px 12px;
+    border: 1px solid #f1b5b0;
+    border-left: 4px solid #b42318;
+    border-radius: 8px;
+    background: #fdeeed;
+    color: #8a1c13;
+    font-size: 13px;
+    line-height: 1.4;
+}
+
 @media (max-width: 800px) {
     .manager-card {
         grid-template-columns: minmax(0, 1fr) auto;

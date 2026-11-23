@@ -18,6 +18,21 @@ const managerService = {
         const {data} = await axiosInstance.post(urls.managers.manager, manager);
         return data
     },
+    banManager: async (id) => {
+        const {data} = await axiosInstance.patch(urls.managers.banManager(id));
+        return data
+    },
+    unbanManager: async (id) => {
+        const {data} = await axiosInstance.patch(urls.managers.unbanManager(id));
+        return data
+    },
+    createActivationToken: async (id) => {
+        const {data} = await axiosInstance.post(urls.managers.createActivationToken(id));
+        return data
+    },
+    activateManager: async (token, data) => {
+        await axiosInstance.post(urls.managers.activateManager(token), data);
+    },
 };
 
 export {

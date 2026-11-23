@@ -57,10 +57,15 @@ class UnbanManagerView(GenericAPIView):
 
     def patch(self, request, *args, **kwargs):
         user = self.get_object()
-        if not user.is_active and user.is_banned:
-            user.is_active = True
-            user.is_banned = False
-            user.save()
+        if not user.is_active and not user.is_banned:
+            raise ValidationError('This manager has not been activated yet.')
+
+        if user.is_active and not user.is_banned:
+            raise ValidationError('This manager has not been banned.')
+
+        user.is_banned = False
+        user.is_active = True
+        user.save()
 
         serializer = UserSerializer(user)
         return Response(serializer.data, status=status.HTTP_200_OK)
@@ -72,10 +77,12 @@ class ActivationTokenView(GenericAPIView):
     def post(self, request, *args, **kwargs):
         user = self.get_object()
 
-        if user.is_active:
-            raise ValidationError('The manager has already been activated')
         if user.is_banned:
             raise ValidationError('The manager is banned!!!')
+
+        if user.is_active:
+            raise ValidationError('The manager has already been activated')
+
 
         token = JWTService.create_token(user, ActivateToken)
         return Response({'token': str(token)}, status=status.HTTP_200_OK)
@@ -94,7 +101,7 @@ class ManagerActivateView(GenericAPIView):
         if user.is_banned:
             raise ValidationError('The manager is banned!!!')
 
-        if user.is_active or user.has_usable_password():
+        if user.is_active:
             raise ValidationError('The manager is already activated!!!')
 
 

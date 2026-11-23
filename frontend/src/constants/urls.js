@@ -22,6 +22,10 @@ const urls = {
         manager,
         selfManager: `${manager}/me`,
         statistic: `${orders}/statistic`,
+        banManager: (id) => `${manager}/${id}/ban`,
+        unbanManager: (id) => `${manager}/${id}/unban`,
+        createActivationToken: (id) => `${manager}/${id}/activation-token`,
+        activateManager: (token) => `${manager}/activate/${token}`,
     }
 };
 

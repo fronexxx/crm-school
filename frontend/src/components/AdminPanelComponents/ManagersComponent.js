@@ -21,8 +21,10 @@ const ManagersComponent = () => {
         setIsModalOpen(true);
     };
 
-    const loadManagers = useCallback(async () => {
-        setLoading(true);
+    const loadManagers = useCallback(async ({silent = false} = {}) => {
+        if (!silent) {
+            setLoading(true);
+        }
 
         const value = await run(() => managerService.getAllManagers(page));
         if (value) {
@@ -32,11 +34,14 @@ const ManagersComponent = () => {
             });
 
             setManagers(value.managers);
-        } else {
+        } else if (!silent){
             setManagers([]);
         }
 
-        setLoading(false);
+        if (!silent) {
+            setLoading(false);
+        }
+
     }, [page, run])
 
     const handleSave = async (data) => {
@@ -107,7 +112,7 @@ const ManagersComponent = () => {
                         <div className="managers-loading">
                             <span>Loading...</span>
                         </div>
-                        : managers.map(manager => <ManagerComponent key={manager.id} manager={manager}/>)
+                        : managers.map(manager => <ManagerComponent key={manager.id} manager={manager} onUpdated={() => loadManagers({silent: true})}/>)
                     }
                 </div>
 

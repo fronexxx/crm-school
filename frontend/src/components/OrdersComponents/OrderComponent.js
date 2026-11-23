@@ -61,7 +61,7 @@ const OrderComponent = ({order, groups, onUpdated, currentUserId, onGroupCreated
                 <td>{order.id}</td>
                 <td>{order.name || '-'}</td>
                 <td>{order.surname || '-'}</td>
-                <td>{order.email ?? '-'}</td>
+                <td>{order.email || '-'}</td>
                 <td>{order.phone ?? '-'}</td>
                 <td>{order.age ?? '-'}</td>
                 <td>{order.course || '-'}</td>
