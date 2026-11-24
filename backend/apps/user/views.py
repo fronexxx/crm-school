@@ -27,6 +27,8 @@ class ListCreateManagersView(ListCreateAPIView):
 
 class BanManagerView(GenericAPIView):
     permission_classes = (IsAdmin, )
+    serializer_class = UserSerializer
+
     def get_queryset(self):
         return UserModel.objects.exclude(pk=self.request.user.id)
 
@@ -52,6 +54,7 @@ class BanManagerView(GenericAPIView):
 
 class UnbanManagerView(GenericAPIView):
     permission_classes = (IsAdmin, )
+    serializer_class = UserSerializer
     def get_queryset(self):
         return UserModel.objects.exclude(pk=self.request.user.id)
 
