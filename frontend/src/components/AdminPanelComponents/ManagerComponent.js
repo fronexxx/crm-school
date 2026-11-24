@@ -7,6 +7,7 @@ import {useState} from "react";
 const ManagerComponent = ({manager, onUpdated}) => {
     const {run, error, setError} = useRequest();
     const [activationLink, setActivationLink] = useState(null);
+    const [recoveryLink, setRecoveryLink] = useState(null);
     const [copied, setCopied] = useState(false);
 
     const handleOnActivate = async (id) => {
@@ -18,12 +19,32 @@ const ManagerComponent = ({manager, onUpdated}) => {
 
     };
 
-    const handleCopy = async () => {
+    const handleActivationCopy = async () => {
         try {
             await navigator.clipboard.writeText(String(activationLink));
             setCopied(true);
             setTimeout(() => setCopied(false), 2000);
             setTimeout(() => setActivationLink(null), 10000);
+        } catch {
+            setError('Could not copy the link');
+        }
+    };
+
+    const handleOnRecoveryPassword = async (id) => {
+        const value = await run(() => managerService.recoveryToken(id));
+
+        if (value) {
+            setRecoveryLink(`${window.location.origin}/recovery/${value.recovery_token}`);
+            setTimeout(() => setRecoveryLink(null), 20000);
+        }
+    };
+
+    const handleRecoveryCopy = async () => {
+        try {
+            await navigator.clipboard.writeText(String(recoveryLink));
+            setCopied(true);
+            setTimeout(() => setCopied(false), 2000);
+            setTimeout(() => setRecoveryLink(null), 10000);
         } catch {
             setError('Could not copy the link');
         }
@@ -62,9 +83,15 @@ const ManagerComponent = ({manager, onUpdated}) => {
             </div>
             <div className="manager-actions">
                 {manager.is_active
-                    ? <button className="manager-btn manager-btn--activate" type="button">RECOVERY PASSWORD</button>
+                    ? recoveryLink
+                        ? <button className="manager-btn manager-btn--activate" type="button" onClick={handleRecoveryCopy}>
+                            {copied ? 'COPIED' : 'COPY TO CLIPBOARD'}
+                        </button>
+                        : <button className="manager-btn manager-btn--activate" type="button" onClick={() => handleOnRecoveryPassword(manager.id)}>
+                            RECOVERY PASSWORD
+                        </button>
                     : activationLink
-                        ? <button className="manager-btn manager-btn--activate" type="button" onClick={handleCopy}>
+                        ? <button className="manager-btn manager-btn--activate" type="button" onClick={handleActivationCopy}>
                             {copied ? 'COPIED' : 'COPY TO CLIPBOARD'}
                         </button>
                         : <button className="manager-btn manager-btn--activate" type="button" onClick={() => handleOnActivate(manager.id)}>

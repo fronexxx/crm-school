@@ -26,6 +26,8 @@ const urls = {
         unbanManager: (id) => `${manager}/${id}/unban`,
         createActivationToken: (id) => `${manager}/${id}/activation-token`,
         activateManager: (token) => `${manager}/activate/${token}`,
+        recoveryToken: (id) => `${manager}/${id}/recovery-token`,
+        recoveryPassword: (recoveryToken) => `${manager}/recovery-password/${recoveryToken}`
     }
 };
 

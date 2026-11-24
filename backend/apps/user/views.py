@@ -133,18 +133,24 @@ class ManagerRecoveryPasswordView(GenericAPIView):
     serializer_class = SetPasswordSerializer
     authentication_classes = []
 
+    @atomic
     def post(self, request, recovery_token):
         serializer = self.serializer_class(data=request.data)
         serializer.is_valid(raise_exception=True)
 
-        user = JWTService.verify_token(recovery_token, RecoveryToken)
+        user, token_obj = JWTService.verify_token(recovery_token, RecoveryToken)
 
         if user.is_banned:
             raise ValidationError('The manager is banned!!!')
 
+        if not user.is_active:
+            raise ValidationError('The manager has not been activated yet!!!')
+
         password = serializer.validated_data['password']
         user.set_password(password)
         user.save()
+
+        token_obj.blacklist()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 class SelfManagerView(RetrieveAPIView):

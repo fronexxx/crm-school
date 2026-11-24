@@ -33,6 +33,13 @@ const managerService = {
     activateManager: async (token, data) => {
         await axiosInstance.post(urls.managers.activateManager(token), data);
     },
+    recoveryToken: async (id) => {
+        const {data} = await axiosInstance.post(urls.managers.recoveryToken(id));
+        return data
+    },
+    recoveryPassword: async (recoveryToken, data) => {
+        await axiosInstance.post(urls.managers.recoveryPassword(recoveryToken), data);
+    },
 };
 
 export {
