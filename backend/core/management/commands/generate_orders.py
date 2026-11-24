@@ -10,6 +10,11 @@ fake = Faker('uk_UA')
 
 class Command(BaseCommand):
     def handle(self, *args, **options):
+
+        if OrderModel.objects.exists():
+            self.stdout.write('Orders already exist, skipping')
+            return
+
         for i in range(500):
             phone_number = f'0{random.choice([50, 63, 66, 67, 68, 73, 77, 93, 95, 96, 97, 98])}{random.randint(1000000, 9999999)}'
 
